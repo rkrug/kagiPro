@@ -1,0 +1,26 @@
+Package: rkagi
+Title: Kagi API Client for R
+Version: 0.1.0
+Description: A hybrid S3-based client for Kagi APIs (Search, Summarizer, FastGPT, Enrich)
+    with httr2-style requests and endpoint-specific parsers.
+Authors@R: c(
+    person("Rainer M.", "Krug", email = "Rainer.Krug@Senckenberg.de", role = c("aut","cre"))
+    )
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends:
+    R (>= 4.2.0)
+Imports:
+    S7,
+    httr2,
+    jsonlite,
+    tibble
+Suggests:
+    keyring,
+    quarto,
+    knitr,
+    testthat (>= 3.0.0)
+VignetteBuilder: quarto
+RoxygenNote: 7.3.2
+Config/testthat/edition: 3

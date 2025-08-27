@@ -1,0 +1,189 @@
+---
+title: "rkagi Quickstart Guide"
+author: "Rainer Krug"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    df-print: paged
+execute:
+  echo: true
+  warning: false
+  message: false
+editor: visual
+---
+
+> A minimal, ropensci-style quickstart for using **rkagi** with the Kagi APIs
+> (Search, Enrich, and the Universal Summarizer), featuring environment-based
+> authentication, S3 results, and helper utilities.
+
+## Installation
+
+```r
+# install.packages("remotes")
+remotes::install_local(upgrade = "never")  # from your package root
+# or: remotes::install_github("ropensci/rkagi")
+```
+
+## Authentication
+
+The client reads your API key from the environment by default. Add the following
+to your `~/.Renviron` and restart R:
+
+```
+KAGI_API_KEY=your_token_here
+```
+
+Alternatively, you can pass a **lazy** key-resolver (recommended with keyring):
+
+```r
+conn <- new_kagi_connection(
+  endpoint = "search",
+  api_key  = function() keyring::key_get("API_kagi")
+)
+```
+
+Keys are resolved **only at request time** via `resolve_api_key()`.
+
+## Package Concepts
+
+- **Connections**: `kagi_connection(base_url, endpoint, api_key)`
+- **Requests**: small S3 objects (e.g. `kagi_search`, `summarizer_request`, `enrich_request`)
+- **Results**: S3 objects with parsed JSON + metadata (e.g. `kagi_search_results`)
+- **Helpers**: `build_kagi_q()` to compose advanced queries; `open_kagi_query()` to inspect them in a browser.
+
+## Build a Precise Query
+
+Use structured operators (`filetype:`, `site:`, `inurl:`, `intitle:`) — vectors are supported
+and combined where appropriate (OR for `filetype` and `site`, AND for `inurl`/`intitle`).
+
+```r
+library(rkagi)
+
+q <- build_kagi_q(
+  query    = 'biodiversity "annual report"',
+  filetype = c("pdf", "docx"),
+  site     = c("example.com", "gov"),
+  inurl    = c("2024", "report"),
+  intitle  = "summary"
+)
+
+q
+open_kagi_query(q)  # opens https://kagi.com/search?q=...
+```
+
+## Search API (closed beta)
+
+Create a connection and a prepared search, then perform it. Results are typed S3
+objects that print nicely and provide helpers to extract hits, related queries, and metadata.
+
+```r
+conn <- new_kagi_connection(endpoint = "search")  # api_key resolved lazily
+
+s <- new_kagi_search(conn, q = q, limit = 5)
+s                                # prints the request
+
+res <- kagi_perform(s, path = tempfile(fileext = ".json"))  # optional: save raw JSON
+res                               # prints summary (hits, related, timing)
+
+hits    <- kagi_hits(res)         # tibble of t == 0 results
+related <- kagi_related(res)      # character vector of t == 1 related queries
+meta    <- kagi_meta(res)         # list of { id, node, ms, api_balance }
+```
+
+### One-liner
+
+```r
+res <- kagi_search_once(q = q)
+kagi_hits(res)
+```
+
+## Enrich API
+
+The Enrich endpoint returns higher-signal results from specialized indices.
+The workflow mirrors search: request → perform → helpers.
+
+```r
+conn_e <- new_kagi_connection(endpoint = "enrich")  # or 'enrich/web' based on your implementation
+req_e  <- new_enrich_request(conn_e, q = q)         # enrich parameters as defined by your package
+res_e  <- enrich_perform(req_e, path = tempfile(fileext = '.json'))
+
+res_e                        # print summary
+enrich_items <- enrich_extract(res_e)  # your helper to get a tibble (if provided)
+```
+
+> Tip: If your package exposes multiple enrich flavors (e.g., `/enrich/web`),
+> consider mirrors of `new_enrich_request()` or a `type` argument.
+
+## Universal Summarizer
+
+Summarize a URL (GET) or raw text (POST). The call returns S3 results with
+`output`, `tokens`, and `meta`.
+
+```r
+conn_s <- new_kagi_connection(endpoint = "summarize")
+
+# URL mode
+req_s  <- new_summarizer_request(conn_s,
+                                 url = "https://www.youtube.com/watch?v=ZSRHeXYDLko",
+                                 engine = "muriel",
+                                 summary_type = "summary",
+                                 target_language = "EN")
+
+res_s  <- summarizer_perform(req_s, path = tempfile(fileext = ".json"))
+summarizer_output(res_s)
+summarizer_tokens(res_s)
+summarizer_meta(res_s)
+
+# Text mode
+req_s2 <- new_summarizer_request(conn_s,
+                                 text = "Paste long text here ...",
+                                 engine = "cecil",
+                                 summary_type = "takeaway",
+                                 target_language = "EN",
+                                 cache = FALSE)
+
+res_s2 <- summarizer_perform(req_s2)
+summarizer_output(res_s2)
+```
+
+## Testing with vcr
+
+Record once, replay thereafter. Be sure to filter your API key from cassettes.
+
+```r
+# tests/testthat/setup-vcr.R
+vcr::vcr_configure(
+  dir = testthat::test_path("fixtures/cassettes"),
+  record = Sys.getenv("VCR_RECORD_MODE", unset = "once"),
+  filter_sensitive_data = list("<<KAGI_API_KEY>>" = Sys.getenv("KAGI_API_KEY")),
+  filter_request_headers = list("Authorization"),
+  match_requests_on = c("method", "uri", "body")
+)
+
+# In tests:
+vcr::use_cassette("search_basic", {
+  conn <- new_kagi_connection(endpoint = "search")
+  res  <- kagi_search_once('openalex api')
+  testthat::expect_s3_class(res, 'kagi_search_results')
+})
+```
+
+## Error Handling
+
+HTTP errors are converted to informative R errors using `httr2::req_error()`.
+API-provided messages (if present) are preserved in thrown conditions. Consider
+defining custom condition classes to allow `tryCatch()` by users.
+
+## Rate Limits & Courtesy
+
+Respect `Retry-After` headers and consider a simple backoff on 429/503 responses.
+Avoid hammering endpoints; cache raw JSON on disk when feasible by using the
+`path` argument of `*_perform()`.
+
+## Session info
+
+```r
+sessionInfo()
+```

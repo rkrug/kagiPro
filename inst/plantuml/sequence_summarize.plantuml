@@ -1,0 +1,36 @@
+@startuml
+title Sequence — Universal Summarizer
+
+actor User
+participant "new_kagi_connection(endpoint='summarize')" as Conn
+participant "new_summarizer_request()" as NewReq
+participant "summarizer_perform.summarizer_request()" as Perform
+participant "kagi_req_build()" as Build
+participant "Kagi API /summarize" as API
+participant "new_summarizer_results()" as Wrap
+
+== Prepare ==
+User -> Conn : kagi_connection('summarize', api_key)
+User -> NewReq : summarizer_request(conn, url|text, engine?, summary_type?, lang?, cache?)
+NewReq --> User : summarizer_request
+
+== Perform ==
+User -> Perform : summarizer_perform(request, path?)
+Perform -> Build : kagi_req_build(conn)
+Build --> Perform : httr2::request (configured)
+
+alt URL mode (GET)
+  Perform -> Perform : req_url_query(url, engine?, summary_type?, lang?, cache?)
+  Perform -> API : HTTP GET /api/v0/summarize?url=...
+else Text mode (POST)
+  Perform -> Perform : req_body_json({ text, engine?, ... })
+  Perform -> API : HTTP POST /api/v0/summarize
+end
+
+API --> Perform : 200 OK (JSON)
+
+Perform -> Perform : resp_body_string() -> raw_json\nfromJSON() -> parsed
+Perform -> Perform : if(path) writeLines(raw_json, path)
+Perform -> Wrap : new_summarizer_results(request, raw_json, parsed)
+Wrap --> User : summarizer_results
+@enduml

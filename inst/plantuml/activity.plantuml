@@ -1,0 +1,26 @@
+@startuml
+title Activity — Build → Perform → Parse
+
+start
+:Validate object (class, API key, endpoint);
+:Build request via kagi_req_build(conn);
+
+if (params include text?) then (yes)
+  :req_body_json(params);
+  :HTTP POST to endpoint;
+else (no)
+  :req_url_query(params);
+  :HTTP GET to endpoint;
+endif
+
+:req_perform();
+:resp_body_string() -> raw_json;
+:jsonlite::fromJSON(raw_json) -> parsed;
+
+if (path provided?) then (yes)
+  :writeLines(raw_json, path);
+endif
+
+:Construct results (new_*_results);
+stop
+@enduml

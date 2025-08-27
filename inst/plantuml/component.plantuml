@@ -1,0 +1,31 @@
+@startuml
+title Component — rkagi package structure
+
+package "rkagi" {
+  [R/connection.R] as ConnFile
+  [R/utils.R] as UtilsFile
+  [R/search.R] as SearchFile
+  [R/search_perform.R] as SearchPerformFile
+  [R/search_results.R] as SearchResultsFile
+  [R/search_simple.R] as SearchSimpleFile
+
+  [R/summarizer.R] as SumFile
+  [R/summarizer_perform.R] as SumPerformFile
+  [R/summarizer_results.R] as SumResultsFile
+  [R/summarizer_simple.R] as SumSimpleFile
+}
+
+ConnFile -[hidden]-> UtilsFile
+
+SearchFile ..> ConnFile
+SearchPerformFile ..> SearchFile
+SearchPerformFile ..> ConnFile
+SearchResultsFile ..> SearchFile
+SearchSimpleFile ..> SearchPerformFile
+
+SumFile ..> ConnFile
+SumPerformFile ..> SumFile
+SumPerformFile ..> ConnFile
+SumResultsFile ..> SumFile
+SumSimpleFile ..> SumPerformFile
+@enduml

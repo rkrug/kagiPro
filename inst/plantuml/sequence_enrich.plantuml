@@ -1,0 +1,36 @@
+@startuml
+title Sequence — Kagi Enrich
+
+actor User
+participant "new_kagi_connection(endpoint='enrich')" as Conn
+participant "new_enrich_request()" as NewReq
+participant "enrich_perform.enrich_request()" as Perform
+participant "kagi_req_build()" as Build
+participant "Kagi API /enrich" as API
+participant "new_enrich_results()" as Wrap
+
+== Prepare ==
+User -> Conn : kagi_connection('enrich', api_key)
+User -> NewReq : enrich_request(conn, url|text, fields?, include?, target_language?, cache?)
+NewReq --> User : enrich_request
+
+== Perform ==
+User -> Perform : enrich_perform(request, path?)
+Perform -> Build : kagi_req_build(conn)
+Build --> Perform : httr2::request (configured)
+
+alt URL mode (GET)
+  Perform -> Perform : req_url_query(url, fields?, include?, target_language?, cache?)
+  Perform -> API : HTTP GET /api/v0/enrich?url=...
+else Text mode (POST)
+  Perform -> Perform : req_body_json({ text, fields?, include?, target_language?, cache? })
+  Perform -> API : HTTP POST /api/v0/enrich
+end
+
+API --> Perform : 200 OK (JSON)
+
+Perform -> Perform : resp_body_string() -> raw_json\nfromJSON() -> parsed
+Perform -> Perform : if(path) writeLines(raw_json, path)
+Perform -> Wrap : new_enrich_results(request, raw_json, parsed)
+Wrap --> User : enrich_results
+@enduml

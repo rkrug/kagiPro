@@ -1,0 +1,28 @@
+@startuml
+title Sequence — kagi_search end-to-end
+
+actor User
+participant "new_kagi_connection()" as Conn
+participant "new_kagi_search()" as NewSearch
+participant "kagi_perform.kagi_search()" as Perform
+participant "kagi_req_build()" as Build
+participant "Kagi API /search" as API
+participant "new_kagi_search_results()" as Wrap
+
+User -> Conn : create kagi_connection(base_url, endpoint='search', api_key)
+User -> NewSearch : create kagi_search(conn, q, limit?)
+NewSearch --> User : kagi_search
+
+User -> Perform : kagi_perform(kagi_search, path?)
+Perform -> Build : kagi_req_build(conn)
+Build --> Perform : httr2::request (configured)
+
+Perform -> Perform : req_url_query(q, limit?)
+Perform -> API : HTTP GET /api/v0/search?q=...&limit=...
+API --> Perform : 200 OK (JSON)
+
+Perform -> Perform : resp_body_string() -> raw_json\nfromJSON() -> parsed
+Perform -> Perform : if(path) writeLines(raw_json, path)
+Perform -> Wrap : new_kagi_search_results(search, raw_json, parsed)
+Wrap --> User : kagi_search_results
+@enduml
