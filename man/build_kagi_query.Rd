@@ -15,24 +15,71 @@ build_kagi_query(
 )
 }
 \arguments{
-\item{query}{Character scalar with the main search terms (can include quotes/\code{AND}/\code{OR}/...).}
+\item{query}{Character vector of free-text query terms (required).
+These can include quoted phrases and boolean operators.}
 
-\item{filetype}{Character vector of file extensions, e.g. c("pdf","docx"). Combined with \code{OR.}}
+\item{filetype}{Optional character vector of file type extensions
+(e.g. \code{"pdf"}, \code{"docx"}). Each is prefixed with \verb{filetype:}.}
 
-\item{site}{Character vector of domains, e.g. c("example.com","gov"). Combined with \code{OR.}}
+\item{site}{Optional character vector of domains
+(e.g. \code{"example.com"}, \code{"gov"}). Each is prefixed with \verb{site:}.}
 
-\item{inurl}{Character vector of URL substrings to require in the URL. Multiple act like \code{AND.}}
+\item{inurl}{Optional character vector of URL substrings that must be
+present in the result URL. Each is prefixed with \verb{inurl:}.}
 
-\item{intitle}{Character vector of title terms to require in the page title. Multiple act like \code{AND.}}
+\item{intitle}{Optional character vector of terms that must appear in
+the page title. Each is prefixed with \verb{intitle:}.}
 
-\item{expand}{\code{TRUE} or \code{FALSE}, whether to expand the query to include all combinations of the parameters.
-Default: \code{TRUE}. If \code{FALSE}, the normal R recycling rules are used - so use with care!}
+\item{expand}{Logical, default \code{TRUE}. If \code{TRUE}, generate a fully
+crossed set of queries (Cartesian product of all combinations of
+\code{query}, \code{filetype}, \code{site}, \code{inurl}, and \code{intitle}). If \code{FALSE},
+concatenate the arguments into a single combined query string.}
 
-\item{open_in_browser}{\code{TRUE} or \code{FALSE}, whether to open the query in the browser. Default: \code{FALSE}}
+\item{open_in_browser}{Logical, default \code{FALSE}. If \code{TRUE}, each generated
+query is immediately opened in the default web browser via
+\code{\link[=open_kagi_query]{open_kagi_query()}} for inspection.}
 }
 \value{
-A single character string suitable for the \code{q} parameter.
+A character vector of query strings, suitable for use as the \code{q}
+parameter in \code{\link[=kagi_search_once]{kagi_search_once()}} or \code{\link[=kagi_enrich_once]{kagi_enrich_once()}}.
 }
 \description{
-Build a Kagi search query string
+Construct one or more query strings for the Kagi Search API by combining
+free-text terms with structured operators such as \verb{filetype:}, \verb{site:},
+\verb{inurl:}, and \verb{intitle:}. Queries can either be concatenated into a
+single string or expanded into a Cartesian product of all combinations.
+}
+\details{
+This helper makes it easy to build reproducible, complex queries with
+structured operators. Use \code{expand = TRUE} when you want all possible
+combinations (useful in systematic search contexts). Use \code{expand = FALSE}
+when you want a single combined query.
+}
+\examples{
+\dontrun{
+# Single combined query
+build_kagi_query(
+  query = "biodiversity",
+  filetype = c("pdf", "docx"),
+  site = "example.com",
+  expand = FALSE
+)
+
+# Expanded combinations
+build_kagi_query(
+  query = c("biodiversity", "ecosystem"),
+  filetype = c("pdf", "docx"),
+  site = c("example.com", "gov"),
+  expand = TRUE
+)
+
+# Immediately open in browser
+build_kagi_query("openalex api", site = "docs.openalex.org", open_in_browser = TRUE)
+}
+
+}
+\seealso{
+\code{\link[=open_kagi_query]{open_kagi_query()}},
+\code{\link[=kagi_search_once]{kagi_search_once()}},
+\code{\link[=kagi_enrich_once]{kagi_enrich_once()}}
 }

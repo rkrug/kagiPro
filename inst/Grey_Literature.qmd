@@ -1,0 +1,345 @@
+---
+title: "Grey Literature Search on Multiple Websites with rkagi"
+author: "Rainer Krug"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    df-print: paged
+vignette: >
+  %\VignetteIndexEntry{Grey Literature Search using rkagi}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+# Setup
+
+```{r}
+#| label: setup
+
+# devtools::load_all()
+library(rkagi)
+library(here)
+
+# Paths: read via system.file(); write via here::here() into inst/extdata
+shipped_extdata <- function(filename) system.file("extdata", filename, package = "rkagi")
+write_extdata   <- function(filename) here::here("inst", "extdata", filename)
+```
+
+# Methods
+
+## Define Connection Object
+
+
+```{r}
+#| label: define-connection-object
+
+conn <- new_kagi_connection(
+  endpoint = "search",
+  api_key = function() {
+    keyring::key_get("API_kagi")
+  }
+)
+```
+## Search
+
+### Define Search Objects
+
+```{r}
+#| label: define-search-objects
+
+domains <- c(
+  "worldbank.org",
+  "fao.org",
+  "ipbes.net",
+  "arxiv.org",
+  "researchgate.net",
+  "biorxiv.org",
+  "osf.io",
+  "zenodo.org"
+)
+
+query <- "biodiversity"
+
+queries <- build_kagi_query(
+  q = query,
+  filetype = c("pdf", "docx"),
+  site = domains,
+  inurl = NULL,
+  intitle = NULL
+)
+
+searches <- lapply(
+  queries,
+  function(q) {
+    new_kagi_search(
+      conn,
+      q,
+      limit = 100
+    )
+  }
+)
+
+```
+
+### Perform Searches
+
+```{r}
+#| label: perform-search
+
+read_path <- shipped_extdata("search_results.rds")
+if (!(nzchar(read_path) && file.exists(read_path))) {
+  search_results <- lapply(
+    searches,
+    function(s) {
+      message("Performing search for query: ", s$q)
+      res <- kagi_perform(s)
+      message("    Search completed with ", res$data |> nrow(), " hits.")
+      return(res)
+    }
+  )
+
+  # Create directory if it doesn't exist
+  write_path <- write_extdata("search_results.rds")
+  dir.create(dirname(write_path), recursive = TRUE, showWarnings = FALSE)
+
+  # Save results
+  saveRDS(search_results, write_path)
+} else {
+  message(
+    "Loading existing search results from ", read_path
+  )
+  search_results <- readRDS(read_path)
+}
+```
+
+### Combine Search Results
+
+```{r}
+#| label: combine-search-results
+
+read_path <- shipped_extdata("search_result.rds")
+if (!(nzchar(read_path) && file.exists(read_path))) {
+  search_result <- dplyr::bind_rows(
+    lapply(
+      search_results,
+      function(x) {
+        x$data
+      }
+    )
+  )
+
+  # Create directory if it doesn't exist
+  write_path <- write_extdata("search_result.rds")
+  dir.create(dirname(write_path), recursive = TRUE, showWarnings = FALSE)
+
+  # Save results
+  saveRDS(search_result, write_path)
+} else {
+  message("Loading existing search results from ", read_path)
+  search_result <- readRDS(read_path)
+}
+```
+
+## Enrich 
+
+### Define Enrich Objects
+
+```{r}
+#| label: define-enrich-objects
+
+enrichments <- lapply(
+  query,
+  function(x) {
+    new_kagi_enrich(
+      conn = conn,
+      q = x,
+      limit = 100
+    )
+  }
+)
+```
+
+
+### Perform Enrichment
+
+
+```{r}
+#| label: perform-enrichment
+
+enrich_results <- lapply(
+  enrichments,
+  function(s) {
+    message("Performing enrichment for query: ", s$q)
+    res <- kagi_perform(s)
+    message("    Enrichment completed with ", res$data |> nrow(), " hits.")
+    return(res)
+  }
+)
+
+```
+
+
+### Combine Enrich Results
+
+```{r}
+#| label: combine-enrich-results
+
+read_path <- shipped_extdata("enrich_results.rds")
+if (!(nzchar(read_path) && file.exists(read_path))) {
+  enrich_result <- dplyr::bind_rows(
+    lapply(
+      enrich_results,
+      function(x) {
+        x$data
+      }
+    )
+  )
+
+  # Create directory if it doesn't exist
+  write_path <- write_extdata("enrich_results.rds")
+  dir.create(dirname(write_path), recursive = TRUE, showWarnings = FALSE)
+
+  # Save results
+  saveRDS(enrich_result, write_path)
+} else {
+  message(
+    "Loading existing enrich results from ", read_path
+  )
+  enrich_result <- readRDS(read_path)
+}
+
+```
+
+
+## Summarize Search Results
+
+### Define Summarize Objects for Search
+
+```{r}
+#| label: define-summarize-search-objects
+
+search_summaries <- lapply(
+  search_result$url,
+  function(x) {
+    new_kagi_summarize(
+      conn = conn,
+      url = x,
+      text = NULL,
+      engine = "cecil",
+      summary_type = "summary",
+      target_language = "EN"
+    )
+  }
+)
+```
+
+### Perform Summarization of Search
+
+```{r}
+#| label: perform-search-summarization
+
+read_path <- shipped_extdata("summary_search_results.rds")
+if (!(nzchar(read_path) && file.exists(read_path))) {
+  summarize_search_results <- lapply(
+    search_summaries,
+    function(s) {
+      message("Performing summarization for url: ", s$url)
+      res <- kagi_perform(s)
+      message("    Summarization completed.")
+      return(res)
+    }
+  )
+
+  # Create directory if it doesn't exist
+  write_path <- write_extdata("summary_search_results.rds")
+  dir.create(dirname(write_path), recursive = TRUE, showWarnings = FALSE)
+
+  # Save results
+  saveRDS(summarize_search_results, write_path)
+} else {
+  message(
+    "Loading existing summary search results from ", read_path
+  )
+  summarize_search_results <- readRDS(read_path)
+}
+
+```
+
+
+## Summarize Enrich Results
+
+### Define Summarize Objects for Enrich
+
+```{r}
+#| label: define-summarize-enrich-objects
+
+enrich_summaries <- lapply(
+  enrich_result$url,
+  function(x) {
+    new_kagi_summarize(
+      conn = conn,
+      url = x,
+      text = NULL,
+      engine = "cecil",
+      summary_type = "summary",
+      target_language = "EN"
+    )
+  }
+)
+```
+
+### Perform Summarization of Enrichment
+
+```{r}
+#| label: perform-enrich-summarization
+
+
+read_path <- shipped_extdata("summary_enrich_results.rds")
+if (!(nzchar(read_path) && file.exists(read_path))) {
+  summarize_enrich_results <- lapply(
+    enrich_summaries,
+    function(s) {
+      message("Performing summarization for url: ", s$url)
+      res <- kagi_perform(s)
+      message("    Summarization completed.")
+      return(res)
+    }
+  )
+
+  # Create directory if it doesn't exist
+  write_path <- write_extdata("summary_enrich_results.rds")
+  dir.create(dirname(write_path), recursive = TRUE, showWarnings = FALSE)
+
+  # Save results
+  saveRDS(summarize_enrich_results, write_path)
+} else {
+  message(
+    "Loading existing summary enrich results from ", read_path
+  )
+  summarize_enrich_results <- readRDS(read_path)
+}
+
+```
+
+
+# Results
+
+## Search Results
+
+```{r}
+#| label: search-results
+readRDS(shipped_extdata("search_result.rds"))
+```
+
+## Enrich Results
+
+```{r}
+#| label: enrich-results
+
+readRDS(shipped_extdata("enrich_results.rds"))
+```

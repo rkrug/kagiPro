@@ -1,13 +1,5 @@
-#' Execute a Kagi API request
-#'
-#' @param x The request object to execute
-#' @param path Optional file path to save the raw JSON response
-#' @param ... Additional parameters passed to methods
-#'
-#' @return A results object corresponding to the request type
-#' @export
-kagi_perform <- function(x, ...) UseMethod("kagi_perform")
-
+#' @describeIn kagi_perform Execute a Search request
+#' @method kagi_perform kagi_search
 #' @export
 kagi_perform.kagi_search <- function(x, path = NULL, ...) {
   stopifnot(inherits(x, "kagi_search"))

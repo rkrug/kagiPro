@@ -1,14 +1,32 @@
-#' Kagi Universal Summarizer: constructors & generics
+#' Create a new Kagi summarize request
 #'
-#' Defines the summarize_request / summarize_results S3 classes and
-#' the public generics for performing a request and extracting fields.
+#' Construct a typed S3 object of class `kagi_summarize` that describes a
+#' Universal Summarizer request. Use [kagi_perform()] to execute the request
+#' and obtain a [new_kagi_summarize_results()] object.
 #'
-#' This code expects the following helpers to exist in your package:
-#' - new_kagi_connection()    (kagi_connection constructor)
-#' - kagi_req_build()         (preconfigured httr2 request builder)
-#' - `%||%` and compact_list  (utilities)
+#' @param conn A `kagi_connection` object created by [new_kagi_connection()].
+#' @param url Optional character scalar. URL to be summarized. Mutually exclusive
+#'   with `text`.
+#' @param text Optional character scalar. Raw text to be summarized. Mutually
+#'   exclusive with `url`.
+#' @param engine Character scalar. Summarizer engine, one of
+#'   `"cecil"`, `"agnes"`, `"muriel"`, `"daphne"`.
+#' @param summary_type Character scalar. Type of summary requested, one of
+#'   `"summary"` or `"takeaway"`.
+#' @param target_language Character scalar. Target language (ISO code such as
+#'   `"EN"`, `"FR"`, `"DE"`, …).
+#' @param cache Logical. Whether to allow API-side caching.
 #'
-#' @keywords internal
+#' @return A `kagi_summarize` object to be passed to [kagi_perform()].
+#'
+#' @examples
+#' \dontrun{
+#' conn <- new_kagi_connection(endpoint = "summarize")
+#' req <- new_kagi_summarize(conn, text = "Lorem ipsum")
+#' req
+#' }
+#'
+#' @md
 
 # -------- constructors -------------------------------------------------------
 
@@ -152,7 +170,7 @@ print.kagi_summarize <- function(x, ...) {
   if (!is.null(x$text)) {
     cat(
       "  Text:      ",
-      paste0(substr(x$text, 1, 60), if (nchar(x$text) > 60) "…"),
+      paste0(substr(x$text, 1, 60), if (nchar(x$text) > 60) "..."),
       "\n",
       sep = ""
     )

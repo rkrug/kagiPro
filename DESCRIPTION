@@ -6,21 +6,25 @@ Description: A hybrid S3-based client for Kagi APIs (Search, Summarizer, FastGPT
 Authors@R: c(
     person("Rainer M.", "Krug", email = "Rainer.Krug@Senckenberg.de", role = c("aut","cre"))
     )
-License: MIT + file LICENSE
+Author: Rainer M. Krug [aut, cre]
+Maintainer: Rainer M. Krug <Rainer.Krug@Senckenberg.de>
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Depends:
     R (>= 4.2.0)
 Imports:
-    S7,
     httr2,
     jsonlite,
     tibble
 Suggests:
+    here,
     keyring,
     quarto,
     knitr,
-    testthat (>= 3.0.0)
-VignetteBuilder: quarto
+    rmarkdown,
+    testthat (>= 3.0.0),
+    vcr
+VignetteBuilder: knitr, quarto
 RoxygenNote: 7.3.2
 Config/testthat/edition: 3

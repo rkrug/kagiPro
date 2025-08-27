@@ -2,18 +2,60 @@
 % Please edit documentation in R/search_results.R
 \name{new_kagi_search_results}
 \alias{new_kagi_search_results}
-\title{Create a new Kagi search results object}
+\title{Construct search results object}
 \usage{
 new_kagi_search_results(search, raw_json, parsed)
 }
 \arguments{
-\item{search}{A kagi_search object}
+\item{search}{A prepared search request of class \strong{\code{kagi_search}}
+(the object you passed to the API).}
 
-\item{raw}{The raw JSON response from the API}
+\item{raw_json}{A length-one character string containing the raw JSON
+response body returned by the API.}
+
+\item{parsed}{A parsed list (e.g. from
+\code{jsonlite::fromJSON(..., simplifyVector = FALSE)})
+expected to contain top-level elements \code{meta} and \code{data}.}
 }
 \value{
-A kagi_search_results object
+An object of class \strong{\code{kagi_search_results}} with components:
+\describe{
+\item{\code{search}}{The original \code{kagi_search} request.}
+\item{\code{json}}{Raw JSON string for reproducibility/debugging.}
+\item{\code{meta}}{List with response metadata (e.g., \code{id}, \code{ms}, \code{node}, \code{api_balance}).}
+\item{\code{data}}{A tibble with search hits (if present). Each row typically
+corresponds to a search result with fields such as \code{url}, \code{title},
+\code{snippet}, etc. If no results are available, this is \code{NULL}.}
+}
 }
 \description{
-Create a new Kagi search results object
+Build a typed S3 object of class \strong{\code{kagi_search_results}} from a
+successful Kagi Search API response. The object keeps both the
+\strong{raw JSON} payload and the parsed content as a tibble for convenient
+downstream use.
+}
+\details{
+This is a low-level constructor; most users will obtain a
+\code{kagi_search_results} via \code{kagi_perform()} or \code{kagi_search_once()}.
+Results are coerced into a tibble for ease of inspection and
+data manipulation. Any rows with missing \code{url} are dropped.
+}
+\examples{
+\dontrun{
+parsed <- list(
+  meta = list(ms = 200, node = "abc", api_balance = 99),
+  data = list(list(t = 0, url = "https://example.com", title = "Result 1", snippet = "Example..."))
+)
+search <- new_kagi_search(new_kagi_connection(endpoint = "search"), q = "openalex api")
+raw_json <- jsonlite::toJSON(parsed, auto_unbox = TRUE)
+res <- new_kagi_search_results(search, raw_json, parsed)
+res
+tibble::as_tibble(res$data)
+}
+
+}
+\seealso{
+\code{\link{kagi_perform}},
+\code{\link{new_kagi_search}} (request constructor),
+\code{\link{kagi_hits}}, \code{\link{kagi_related}}, \code{\link{kagi_meta}}
 }

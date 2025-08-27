@@ -1,11 +1,5 @@
-#' Kagi Universal Summarizer: perform method
-#'
-#' Executes a prepared summarize_request using the shared kagi_connection.
-#' If `text` was provided the request is POSTed as JSON; otherwise it is sent
-#' as a GET with query parameters (for URL summarization).
-#'
-#' @param x A `summarize_request`.
-#' @param path Optional file path to save the raw JSON response.
+#' @describeIn kagi_perform Execute a Summarize request
+#' @method kagi_perform kagi_summarize
 #' @export
 kagi_perform.kagi_summarize <- function(x, path = NULL, ...) {
   stopifnot(inherits(x, "kagi_summarize"))
@@ -72,7 +66,7 @@ kagi_perform.kagi_summarize <- function(x, path = NULL, ...) {
       recursive = TRUE
     )
     fn <- paste0("kagi_summarize_results.", sprintf("%03d", i), ".json")
-    writeLines(json_txt, file.path(path, fn), useBytes = TRUE)
+    writeLines(raw_json, file.path(path, fn), useBytes = TRUE)
   }
 
   new_kagi_summarize_results(x, raw_json, parsed)

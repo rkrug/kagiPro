@@ -1,0 +1,8 @@
+.github
+.vscode
+^LICENSE\.md$
+^doc$
+^Meta$
+^\.Rcheck$
+^\.\.Rcheck$
+^vignettes/.*\.html$

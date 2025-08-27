@@ -1,5 +1,7 @@
 #' Extract search hits from Kagi search results
 #'
+#' @noRd
+#'
 #' @param x A kagi_search_results object
 #' @param ... Additional parameters (not used)
 #'
@@ -10,6 +12,7 @@ kagi_hits <- function(x, ...) {
 }
 
 #' @rdname kagi_hits
+#' @noRd
 #' @export
 kagi_hits.kagi_search_results <- function(x, ...) {
   rows <- Filter(function(el) is.list(el) && identical(el$t, 0L), x$data)
@@ -56,6 +59,8 @@ kagi_hits.kagi_search_results <- function(x, ...) {
 
 #' Extract related searches from Kagi results
 #'
+#' @noRd
+#'
 #' @param x A kagi_results object
 #' @param ... Additional parameters passed to methods
 #'
@@ -66,6 +71,7 @@ kagi_related <- function(x, ...) {
 }
 
 #' @rdname kagi_related
+#' @noRd
 #' @export
 kagi_related.kagi_search_results <- function(x, ...) {
   rel <- Filter(function(el) is.list(el) && identical(el$t, 1L), x$data)
@@ -80,6 +86,8 @@ kagi_related.kagi_search_results <- function(x, ...) {
 
 #' Extract metadata from Kagi results
 #'
+#' @noRd
+#'
 #' @param x A kagi_results object
 #' @param ... Additional parameters passed to methods
 #'
@@ -90,12 +98,15 @@ kagi_meta <- function(x, ...) {
 }
 
 #' @rdname kagi_meta
+#' @noRd
 #' @export
 kagi_meta.kagi_search_results <- function(x, ...) {
   x$meta
 }
 
 #' Convert Kagi results to a tibble
+#'
+#' @noRd
 #'
 #' @param x A kagi_results object
 #' @param ... Additional parameters passed to methods
@@ -107,6 +118,7 @@ as_tibble.kagi_results <- function(x, ...) {
 }
 
 #' @rdname as_tibble.kagi_results
+#' @noRd
 #' @export
 as_tibble.kagi_search_results <- function(x, ...) {
   kagi_hits(x)

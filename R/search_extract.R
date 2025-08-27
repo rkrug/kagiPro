@@ -45,7 +45,7 @@ kagi_hits.kagi_search_results <- function(x, ...) {
     character(1)
   )
   t_val <- vapply(rows, function(el) as.integer(el$t %||% 0L), integer(1))
-  tibble(
+  tibble::tibble(
     url,
     title,
     snippet,

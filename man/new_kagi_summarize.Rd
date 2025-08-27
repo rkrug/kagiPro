@@ -2,7 +2,7 @@
 % Please edit documentation in R/summarize.R
 \name{new_kagi_summarize}
 \alias{new_kagi_summarize}
-\title{Kagi Universal Summarizer: constructors & generics}
+\title{Create a new Kagi summarize request}
 \usage{
 new_kagi_summarize(
   conn,
@@ -16,14 +16,39 @@ new_kagi_summarize(
   cache = TRUE
 )
 }
+\arguments{
+\item{conn}{A \code{kagi_connection} object created by \code{\link[=new_kagi_connection]{new_kagi_connection()}}.}
+
+\item{url}{Optional character scalar. URL to be summarized. Mutually exclusive
+with \code{text}.}
+
+\item{text}{Optional character scalar. Raw text to be summarized. Mutually
+exclusive with \code{url}.}
+
+\item{engine}{Character scalar. Summarizer engine, one of
+\code{"cecil"}, \code{"agnes"}, \code{"muriel"}, \code{"daphne"}.}
+
+\item{summary_type}{Character scalar. Type of summary requested, one of
+\code{"summary"} or \code{"takeaway"}.}
+
+\item{target_language}{Character scalar. Target language (ISO code such as
+\code{"EN"}, \code{"FR"}, \code{"DE"}, …).}
+
+\item{cache}{Logical. Whether to allow API-side caching.}
+}
+\value{
+A \code{kagi_summarize} object to be passed to \code{\link[=kagi_perform]{kagi_perform()}}.
+}
 \description{
-Defines the summarize_request / summarize_results S3 classes and
-the public generics for performing a request and extracting fields.
+Construct a typed S3 object of class \code{kagi_summarize} that describes a
+Universal Summarizer request. Use \code{\link[=kagi_perform]{kagi_perform()}} to execute the request
+and obtain a \code{\link[=new_kagi_summarize_results]{new_kagi_summarize_results()}} object.
 }
-\details{
-This code expects the following helpers to exist in your package:
-- new_kagi_connection()    (kagi_connection constructor)
-- kagi_req_build()         (preconfigured httr2 request builder)
-- `%||%` and compact_list  (utilities)
+\examples{
+\dontrun{
+conn <- new_kagi_connection(endpoint = "summarize")
+req <- new_kagi_summarize(conn, text = "Lorem ipsum")
+req
 }
-\keyword{internal}
+
+}

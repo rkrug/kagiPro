@@ -1,10 +1,53 @@
-#' Create a new Kagi API connection
+#' Construct a Kagi API connection
 #'
-#' @param base_url Base URL for the Kagi API
-#' @param endpoint API endpoint to use (e.g., "search", "summarizes" or "enrich"). Default: NA
-#' @param api_key Kagi API key
+#' Build a typed S3 object of class **`kagi_connection`** which holds the
+#' basic configuration required to talk to the Kagi API. This includes
+#' the API base URL, endpoint, authentication key, and retry settings.
 #'
-#' @return A kagi_connection object
+#' @param base_url Character scalar. Base URL for the Kagi API.
+#'   Defaults to `"https://kagi.com/api/v0"`.
+#' @param endpoint Character scalar. Specific endpoint to use
+#'   (e.g. `"search"`, `"enrich"`, `"summarize"`). Must be non-empty.
+#' @param api_key API key used for authentication. By default this is read
+#'   from the environment variable `KAGI_API_KEY`. Best practice is to set
+#'   this variable in your `~/.Renviron`. Advanced users may also supply
+#'   a function that resolves the key lazily at request time
+#'   (see [resolve_api_key()]).
+#' @param max_tries Integer scalar. Maximum number of retry attempts
+#'   for transient errors. Defaults to `3`.
+#'
+#' @return An object of class **`kagi_connection`** with components:
+#' \describe{
+#'   \item{`base_url`}{Base API URL.}
+#'   \item{`endpoint`}{Endpoint string.}
+#'   \item{`api_key`}{API key (or a function to resolve it).}
+#'   \item{`max_tries`}{Maximum retry attempts.}
+#' }
+#'
+#' @details
+#' This is a low-level constructor; most users will not call it directly.
+#' Instead, use higher-level helpers such as [kagi_search_once()],
+#' [kagi_enrich_once()], or [kagi_summarize_once()], which create
+#' connections internally.
+#'
+#' @seealso
+#'   [resolve_api_key()],
+#'
+#' @examples
+#' \dontrun{
+#' # Basic connection (API key from env var)
+#' conn <- new_kagi_connection(endpoint = "search")
+#' conn
+#'
+#' # Explicit API key
+#' conn2 <- new_kagi_connection(endpoint = "search", api_key = "my-key")
+#'
+#' # Lazy API key via keyring
+#' conn3 <- new_kagi_connection(endpoint = "search",
+#'                              api_key = function() keyring::key_get("API_kagi"))
+#' }
+#'
+#' @md
 #' @importFrom httr2 request req_url_path_append req_headers req_user_agent req_retry req_error
 #' @export
 new_kagi_connection <- function(
@@ -36,7 +79,7 @@ print.kagi_connection <- function(x, ...) {
   masked <- if (is.character(key)) {
     paste0(
       substr(key, 1, 4),
-      strrep("•", max(0, nchar(key) - 8)),
+      strrep("<e2><80><a2>", max(0, nchar(key) - 8)),
       substr(key, nchar(key) - 3, nchar(key))
     )
   } else {
@@ -64,7 +107,7 @@ kagi_req_build <- function(conn) {
 
   api_key <- resolve_api_key(conn$api_key)
 
-  request(conn$base_url) |>
+  httr2::request(conn$base_url) |>
     httr2::req_url_path_append(conn$endpoint) |>
     httr2::req_headers(Authorization = paste("Bot", api_key)) |>
     httr2::req_user_agent(rkagi_user_agent()) |>
