@@ -6,3 +6,7 @@
 ^\.Rcheck$
 ^\.\.Rcheck$
 ^vignettes/.*\.html$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
