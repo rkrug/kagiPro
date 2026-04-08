@@ -1,0 +1,47 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://kagi.com/api/v0/enrich/news?q=climate+policy
+  response:
+    status: 200
+    headers:
+      x-request-id: 565214960caefb6a02a6768f3ae73d03
+      x-kagi-trace: 565214960caefb6a02a6768f3ae73d03
+      cache-control: no-store
+      content-type: application/json
+      content-encoding: gzip
+      content-length: '1322'
+      via: 1.1 google
+      date: Wed, 08 Apr 2026 12:16:45 GMT
+      x-frame-options: SAMEORIGIN
+      strict-transport-security: max-age=31536000; includeSubDomains; preload
+      alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      string: '{"meta":{"id":"565214960caefb6a02a6768f3ae73d03","node":"europe-west4","ms":592,"api_balance":102.492337},"data":[{"t":0,"url":"https://www.climatecodered.org/2026/03/sustainable-aviation-qantass-climate.html","title":"\"Sustainable\"
+        aviation? Qantas''s climate policy is heading for a crash landing","snippet":"Rising
+        fuel costs and disrupted flight paths, a consequence of the unprovoked and
+        illegal attack on Iran by Israel and the US, are not the biggest risk to Qantas’s
+        business. Nothing confirms the level of risk associated with Qantas’s &quot;sustainable
+        aviation&quot; claims more than this threat to its ongoing operation, exposed
+        in a new report from Flight-Fr..","published":"2026-03-31T07:00:00Z"},{"t":0,"url":"https://www.volts.wtf/p/rethinking-climate-regulation-from","title":"Rethinking
+        climate regulation from the ground up","snippet":"And now the work that I
+        started doing at FAS and trying to think about what the next chapter of climate
+        policy looks like, it is very clear to me that though there was a tremendous
+        amount of ambition and expertise in both the Obama and Biden administrations
+        and motivation to move on climate, the tools that we had to push that forward
+        weren’t gettin..","published":"2026-04-03T07:00:00Z"},{"t":0,"url":"https://www.carbonbrief.org/guest-post-health-benefits-of-paris-climate-goals-could-save-millions-of-lives-by-2040/","title":"Guest
+        post: Health benefits of Paris climate goals could save millions of lives
+        by 2040 - Carbon Brief","snippet":"At the same time, a Lancet Commission on
+        health and climate change found that “tackling climate change could be the
+        greatest global health opportunity of the 21st century”. This is good news,
+        not only because of the opportunities to benefit health, but also because
+        the evidence suggests that framing climate change in this way can help gain
+        public s..","published":"2021-02-17T08:00:00Z"},{"t":0,"url":"https://www.resilience.org/stories/2026-04-06/climate-cracks-are-spreading-and-even-the-system-knows-it-cant-hold/","title":"Climate
+        cracks are spreading — and even the system knows it can’t hold","snippet":"Scientists
+        have been warning us about the growing risks of climate change, natural disasters,
+        and potentially catastrophic events with increasing urgency since the 1960s,
+        but we have collectively failed to convert. The 2025 report from the Institute
+        and Faculty of Actuaries on Planetary Solvency forewarned, “Current climate
+        policies risk catastroph..","published":"2026-04-06T07:00:00Z"}]}'
+  recorded_at: 2026-04-08 12:16:43
+recorded_with: VCR-vcr/2.0.0

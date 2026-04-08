@@ -1,0 +1,52 @@
+http_interactions:
+- request:
+    method: POST
+    uri: https://kagi.com/api/v0/summarize
+    body:
+      string: '{"text":"Biodiversity underpins ecosystem services such as pollination,
+        soil fertility, water purification, and climate regulation. Habitat loss,
+        pollution, invasive species, and climate change are accelerating species decline,
+        which affects food security and resilience. Conservation and restoration policies
+        can improve ecological and economic stability.","engine":"cecil","summary_type":"summary","target_language":"EN","cache":true}'
+  response:
+    status: 500
+    headers:
+      x-request-id: 7938de873246d0af1d5f0e4e3476c441
+      x-kagi-trace: 7938de873246d0af1d5f0e4e3476c441
+      cache-control: no-store
+      content-type: application/json
+      content-encoding: gzip
+      content-length: '220'
+      via: 1.1 google
+      date: Wed, 08 Apr 2026 12:16:45 GMT
+      x-frame-options: SAMEORIGIN
+      strict-transport-security: max-age=31536000; includeSubDomains; preload
+      alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      string: '{"meta":{"id":"7938de873246d0af1d5f0e4e3476c441","node":"europe-west4","ms":27,"api_balance":102.492337},"data":{"output":null,"tokens":0},"error":[{"code":200,"msg":"We
+        are sorry, we were not able to process this. (Min document size not reached)","ref":null}]}'
+  recorded_at: 2026-04-08 12:16:43
+- request:
+    method: POST
+    uri: https://kagi.com/api/v0/summarize
+    body:
+      string: '{"text":"Too short.","engine":"cecil","summary_type":"summary","target_language":"EN","cache":true}'
+  response:
+    status: 500
+    headers:
+      x-request-id: c6ee71cd3bfa681698ae8041a02f69a8
+      x-kagi-trace: c6ee71cd3bfa681698ae8041a02f69a8
+      cache-control: no-store
+      content-type: application/json
+      content-encoding: gzip
+      content-length: '219'
+      via: 1.1 google
+      date: Wed, 08 Apr 2026 12:16:45 GMT
+      x-frame-options: SAMEORIGIN
+      strict-transport-security: max-age=31536000; includeSubDomains; preload
+      alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      string: '{"meta":{"id":"c6ee71cd3bfa681698ae8041a02f69a8","node":"europe-west4","ms":28,"api_balance":102.492337},"data":{"output":null,"tokens":0},"error":[{"code":200,"msg":"We
+        are sorry, we were not able to process this. (Min document size not reached)","ref":null}]}'
+  recorded_at: 2026-04-08 12:16:43
+recorded_with: VCR-vcr/2.0.0

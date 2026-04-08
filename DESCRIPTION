@@ -1,8 +1,11 @@
 Package: rkagi
 Title: Kagi API Client for R
-Version: 0.1.0
-Description: A hybrid S3-based client for Kagi APIs (Search, Summarizer, FastGPT, Enrich)
-    with httr2-style requests and endpoint-specific parsers.
+Version: 0.3.0
+Description: User-friendly R client for the Kagi APIs (Search, Enrich, Summarizer,
+    and FastGPT). Build endpoint-specific query objects, run single or batch
+    requests with one reusable connection, and write reproducible JSON outputs
+    for analysis pipelines. Includes optional graceful error handling with dummy
+    outputs and JSON-to-parquet conversion for downstream workflows.
 Authors@R: c(
     person("Rainer M.", "Krug", email = "Rainer.Krug@Senckenberg.de", role = c("aut","cre"))
     )
@@ -14,18 +17,22 @@ LazyData: true
 Depends:
     R (>= 4.2.0)
 Imports:
+    DBI, 
+    duckdb,
+    future,
+    future.apply,
     httr2,
     jsonlite,
-    tibble
+    utils
 Suggests:
     here,
     keyring,
-    quarto,
     knitr,
+    quarto,
     rmarkdown,
     testthat (>= 3.0.0),
     vcr
 VignetteBuilder: knitr, quarto
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Config/testthat/edition: 3
 URL: https://rkrug.github.io/rkagi/

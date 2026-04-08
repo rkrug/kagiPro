@@ -2,13 +2,6 @@
   if (is.null(x) || (is.character(x) && !nzchar(x))) y else x
 }
 
-#' Drop NULL elements from a list
-#' @keywords internal
-compact_list <- function(x) {
-  x[!vapply(x, is.null, logical(1L))]
-}
-
-
 #' Resolve API key from a connection object
 #' @keywords internal
 resolve_api_key <- function(api_key) {

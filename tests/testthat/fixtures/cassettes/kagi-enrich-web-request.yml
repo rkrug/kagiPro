@@ -1,0 +1,154 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://kagi.com/api/v0/enrich/web?q=open+data
+  response:
+    status: 200
+    headers:
+      x-request-id: 263b6f74b93e20b3ca36c5ee420b2e22
+      x-kagi-trace: 263b6f74b93e20b3ca36c5ee420b2e22
+      cache-control: no-store
+      content-type: application/json
+      content-encoding: gzip
+      content-length: '5486'
+      via: 1.1 google
+      date: Wed, 08 Apr 2026 12:16:44 GMT
+      x-frame-options: SAMEORIGIN
+      strict-transport-security: max-age=31536000; includeSubDomains; preload
+      alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      string: '{"meta":{"id":"263b6f74b93e20b3ca36c5ee420b2e22","node":"europe-west4","ms":680,"api_balance":102.494337},"data":[{"t":0,"url":"https://shkspr.mobi/blog/2015/02/almost-open-data/","title":"*Almost*
+        Open Data","snippet":"Inspired by a session at Open Data Camp called &quot;Open
+        Data Horror Stories&quot;) I would like this data, please, in a format which
+        I can edit, such as a CSV file, or one which I can enter into a mapping service,
+        such as a GPX/KML file. That&#39;s the beauty of open data - it opens up endless
+        possibilities.","published":"2015-02-01T00:00:00Z"},{"t":0,"url":"http://opendatastructures.org/","title":"Open
+        Data Structures Book","snippet":"Data structures presented in the book include
+        stacks, queues, deques, and lists implemented as arrays and linked-lists;
+        space-efficient implementations of lists; skip lists; hash tables and hash
+        codes; binary search trees including treaps, scapegoat trees, and red-black
+        trees; integer searching structures including binary tries, x-fast tries,
+        and y.."},{"t":0,"url":"https://open-covid-19.github.io/explorer/","title":"COVID-19
+        Open Data Explorer","snippet":"Moreover, the data merges daily time-series
+        from hundreds of data sources at a fine spatial resolution, containing over
+        20,000 locations and using a consistent set of region keys. Dynamic covariate
+        data X(i,t), such as mobility, search trends, weather, and government interventions
+        The data is drawn from multiple sources, as listed below, and stored.."},{"t":0,"url":"http://opendata-tools.org/en/visualization/","title":"Open
+        Data Tools - Visualization","snippet":"Javascript API from Google to easily
+        create visualization charts, also from real-time data. Javascript toolkit
+        for creating data visualizations with support of various chart types. Reporting
+        system for eclipse to create visually compelling reports from large amounts
+        of data."},{"t":0,"url":"https://data.gov.uk/","title":"Find open data - data.gov.uk","snippet":"Find
+        data published by central government, local authorities and public bodies
+        to help you build products and services Armed forces, health and safety, search
+        and rescue Trusted data that is referenced and shared across government departments"},{"t":0,"url":"https://data.oregon.gov/","title":"Oregon
+        | Open Data | data.oregon.gov | Oregon''s Open Data Portal | Oregon.gov","snippet":"Resources
+        for State agencies and the public.Resources for Open Data CoordinatorsOpen
+        Data Coordinators work within their agencies to inventory, prioritize and
+        publish high quality open dataView the Data Coordinator&#39;s HandbookThe
+        Oregon Transparency WebsiteAdditional resources, datasets, and visualizations
+        can be found on the Oregon Transparency Web.."},{"t":0,"url":"https://opendatacommons.org/licenses/odbl/","title":"Open
+        Data Commons Open Database License (ODbL) -- Open Data Commons: legal tools","snippet":"Any
+        rights in individual contents of the database are licensed under the Database
+        Contents License: http://opendatacommons.org/licenses/dbcl/1.0/ Use your own
+        license for the contents: You are welcome to apply your own specific license
+        to the contents of the database instead of the Database Contents License.
+        To do this just replace the second sente.."},{"t":0,"url":"https://www1.nyc.gov/assets/home/downloads/pdf/reports/2015/NYC-Open-Data-Plan-2015.pdf","title":"NYC
+        Open Data Plan","snippet":" "},{"t":0,"url":"https://arxiv.org/abs/1909.03653","title":"[1909.03653]
+        Open Data Chatbot","snippet":"Abstract: Recently, chatbots received an increased
+        attention from industry and diverse research communities as a dialogue-based
+        interface providing advanced human-computer interactions. On the other hand,
+        Open Data continues to be an important trend and a potential enabler for government
+        transparency and citizen participation. Both individuals and .."},{"t":0,"url":"https://www.toronto.ca/city-government/data-research-maps/open-data/","title":"Open
+        Data - City of Toronto","snippet":"Discover ways that the City as well as
+        members of the public make use of open data to help create services, tell
+        stories and develop applications. Explore how the development of the Open
+        Data Master Plan and Roadmap supports the City&#39;s commitment to Open Government.
+        Learn about open data and how it can help make the City more transparent,
+        accountab.."},{"t":0,"url":"https://open-ui.org/","title":"Home | Open UI","snippet":"The
+        purpose of Open UI to the web platform is to allow web developers to style
+        and extend built-in web UI controls, such as dropdowns, checkboxes, radio
+        buttons, and date/color pickers. We hope to make it unnecessary to reinvent
+        built-in UI controls, but for those who choose to do so, we expect that these
+        design systems will benefit from Open UI&#39;s .."},{"t":0,"url":"https://openconnect.netflix.com/en/","title":"Netflix
+        | Open Connect","snippet":"The Netflix Open Connect program provides opportunities
+        for ISP partners to improve their customers&#39; Netflix user experience by
+        localizing Netflix traffic and minimizing the delivery of traffic that is
+        served over a transit provider. If you have substantial Netflix traffic destined
+        to your ISP customers, deploying embedded OCAs is usually the most .."},{"t":0,"url":"http://openpoplog.sourceforge.net/","title":"Open
+        Poplog","snippet":"OpenPoplog is an initiative to encourage the uptake of
+        Poplog and attract programmers to develop the system further. For much of
+        the 1990s, academic licenses for Poplog were available from Sussex University,
+        while commercial development and support was provided by Integral Solutions
+        Limited (ISL), now part of SPSS. At the turn of the century, Aaron.."},{"t":0,"url":"https://web.archive.org/web/20160314003919/https://www.openlistings.com/near","title":"Open
+        Listings","snippet":null,"published":"2016-03-14T00:39:19Z"},{"t":0,"url":"https://data.worldbank.org/","title":"World
+        Bank Open Data | Data","snippet":"Free and open access to global development
+        dataMOST RECENTCommodity prices were mixed in April—Pink SheetMay 06, 2021How
+        can policy allay farmers&#39; concerns around agricultural data access, sharing,
+        and use? Francesca Casalini, Emily Gray, Marie-Agnès Jouanjean,May 05, 2021The
+        oil market outlook: a speedy recoveryP. Nagle,May 04, 2021Building gender.."},{"t":0,"url":"https://businesshostingplus.com/","title":"Businesshostingplus.com
+        -","snippet":"Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+        accusantium. Praesent sapien massa, convallis a Cras ultricies ligula sed
+        magna dictum porta. Praesent sapien massa, convallis a Cras ultricies ligula
+        sed magna dictum porta."},{"t":0,"url":"http://web.archive.org/web/20110806113426/http://www.hexwiki.org/index.php?title=Opening","title":"Opening
+        - HexWiki","snippet":"The situation is probably most difficult for the first
+        player — his move should not be too strong, since the second player then will
+        swap, but it should not be too weak either, as the second player then will
+        decline the swap and have a better situation. Fortunately strong players have
+        thought thoroughly through this, and there are certain moves tha..","published":"2011-08-06T11:34:26Z"},{"t":0,"url":"http://chris-osm.blogspot.com/","title":"Open
+        Maps","snippet":"I&#39;m happy with how courteous and respectful most drivers
+        are, but there&#39;s always a few idiots and it only takes one to cause a
+        serious problem, so I like to get off the roads. I&#39;ve been wandering the
+        paths and tracks near home on my new bike and loving the fact that hills are
+        now not obstacles but instead are fun. This however is not the route I to.."},{"t":0,"url":"http://vmanamino.github.io/open-news-digest/","title":"Open
+        News Digest","snippet":"Open News Digest is a news service that fetches article
+        details from various news sources. Search capabilities on news source websites
+        are often poor and often don&#39;t get you what you were looking for. This
+        app is API driven and not only retrieves article details, which allow you
+        to decide if the article is worth reading but it allows you to email t.."},{"t":0,"url":"https://web.archive.org/web/20140209192057/http://www.darpa.mil/OpenCatalog/index.html","title":"Open
+        Catalog","snippet":"Gunrock is a CUDA library for graph primitives that refactors,
+        integrates, and generalizes best-of-class GPU implementations of breadth-first
+        search, connected components, and betweenness centrality into a unified code
+        base useful for future development of high-performance GPU graph primitives.
+        To run programs faster, Spark offers a general executi..","published":"2014-02-09T19:20:57Z"},{"t":0,"url":"https://waymo.com/open/","title":"Open
+        Dataset - Waymo","snippet":"Waymo is in a unique position to contribute to
+        the research community with some of the largest and most diverse autonomous
+        driving datasets ever released. Check out the newly released motion dataset
+        in our Waymo Open Dataset and 2021 Challenges! Check out the newly released
+        motion dataset in our Waymo Open Dataset and 2021 Challenges!"},{"t":0,"url":"https://www.iafrikan.com/2014/07/11/open-data-dash/","title":"How
+        To Make Open Data Useful","snippet":"I think there&#39;s a problem with Open
+        Data. The word data (for the non-techie) is scary, spreadsheets and databases
+        are scary, open is scary. We need consumers, journalists, scientists, government
+        employees, policy makers to embrace it, or at least not be terrified of it.","published":"2014-07-11T00:00:00Z"},{"t":0,"url":"https://blog.mozilla.org/metrics/2011/01/11/mozilla-open-data-competition-announcing-the-winners/","title":"Mozilla
+        Open Data Competition Winners","snippet":"Needless to say, we want to thank
+        all the participants – your work has made our initial open data competition
+        an overwhelming success and many of your insights will directly help the Firefox
+        team develop a better web browser. James focused on contrasting survey participants
+        with all users (critical as we often use survey data for segmentation), the..","published":"2011-01-11T00:00:00Z"},{"t":0,"url":"https://web.archive.org/web/20141104230705/https://research.facebook.com/blog/1522692927972019/facebook-s-top-open-data-problems/","title":"Facebook''s
+        Top Open Data Problems","snippet":"There are two general strategies: ensure
+        that enough data is present in the local data center to limit cross-data-center
+        accesses; or reduce the number of round trips between the (local) PHP and
+        the (remote) data layer. A failure in any of these systems results in missing
+        data or failed queries. We&#39;re excited about the opportunity to collaborate
+        wi..","published":"2014-11-04T23:07:05Z"},{"t":0,"url":"https://readwrite.com/2008/04/09/where_to_find_open_data_on_the/","title":"Where
+        to Find Open Data on the Web - ReadWrite","snippet":"What was interesting
+        about this story, in addition to, obviously, the concept of a Data Wiki itself,
+        was the amazing and insightful commentary around this concept, not just on
+        the blog, but all over the net, something which led to the discovery of some
+        pretty good data sources that are already available. Not a data set in the
+        traditional sense, but..","published":"2008-04-09T00:00:00Z"},{"t":0,"url":"http://blogs.nature.com/naturejobs/2016/12/14/scidata16-open-data-should-be-easy/?WT.mc_id=EMX_NJOBS_0812_NATUREJOBSNEWSLETTER_A&WT.ec_id=EXTERNAL","title":"Open
+        data should be easy","snippet":"Open data should be easy,” said Dr Jenny Molloy
+        from the University of Cambridge as she explained the importance of building
+        a data management plan. Everything she said made sense — but if it’s really
+        that easy, why aren’t we already sharing our data? You can access all the
+        slides and videos from Publishing Better Science through Better Data 2016,
+        ..","published":"2016-12-14T00:00:00Z"},{"t":0,"url":"https://web.archive.org/web/20150522140343/http://blog.enigma.io/open-data-and-public-safety/","title":"Open
+        Data and Public Safety","snippet":"Since the AHS goes down only to the city
+        level, the team applied the model weights to poverty, building age, and length
+        of stay data obtained from American Community Survey (ACS) to generate a risk
+        score for each block group in New Orleans. To fine-tune the targeting of the
+        areas with the highest risk of fire-related fatalities, the team augmented
+        ..","published":"2015-05-22T14:03:43Z"},{"t":0,"url":"https://web.archive.org/web/20160304012151/https://data.oaklandnet.com/browse?q=alpr","title":"Search
+        & Browse | Open Data Portal","snippet":"Last Updated Last Updated Last Updated","published":"2016-03-04T01:21:51Z"}]}'
+  recorded_at: 2026-04-08 12:16:42
+recorded_with: VCR-vcr/2.0.0

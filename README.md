@@ -11,6 +11,7 @@
 - **Search API** — perform web searches with advanced operators
 - **Enrich API** — get higher-signal results from specialized indices
 - **Universal Summarizer** — summarize text or URLs in one call
+- **FastGPT API** — ask grounded LLM questions with optional web context
 
 The package follows the [rOpenSci](https://ropensci.org) style for API clients:
 
@@ -43,8 +44,7 @@ keyring::key_set("API_kagi")
 The package will resolve the key at request time with:
 
 ```r
-conn <- new_kagi_connection(
-  endpoint = "search",
+conn <- kagi_connection(
   api_key  = function() keyring::key_get("API_kagi")
 )
 ```
@@ -57,15 +57,25 @@ conn <- new_kagi_connection(
 library(rkagi)
 
 # Build a query
-q <- build_kagi_query(
+q <- search_query(
   query    = 'biodiversity "annual report"',
   filetype = "pdf",
-  site     = "example.com"
+  site     = "example.com",
+  expand   = FALSE
 )
 
-# Perform a one-liner search
-res <- kagi_search_once(q, limit = 3)
-kagi_hits(res)
+# Execute request and write JSON output
+conn <- kagi_connection(api_key = function() keyring::key_get("API_kagi"))
+out <- tempfile("rkagi-search-")
+dir.create(out, recursive = TRUE, showWarnings = FALSE)
+
+kagi_request(
+  connection = conn,
+  query = q,
+  limit = 3,
+  output = out,
+  overwrite = TRUE
+)
 ```
 
 ---
@@ -74,6 +84,16 @@ kagi_hits(res)
 
 A detailed **Quickstart vignette** is included and available at:  
 👉 <https://rkrug.github.io/rkagi/articles/quickstart.html>
+
+Endpoint guides are available at:
+- <https://rkrug.github.io/rkagi/articles/search-endpoint.html>
+- <https://rkrug.github.io/rkagi/articles/enrich-endpoint.html>
+- <https://rkrug.github.io/rkagi/articles/summarize-endpoint.html>
+- <https://rkrug.github.io/rkagi/articles/fastgpt-endpoint.html>
+
+AI-agent skills (for Codex/Claude-style workflows) are packaged under:
+- `inst/skills/`
+- `inst/skills/README.md` (index and selection rules)
 
 The full reference and function documentation is published via **pkgdown** at:  
 👉 <https://rkrug.github.io/rkagi/>
@@ -84,6 +104,22 @@ The full reference and function documentation is published via **pkgdown** at:
 
 Bug reports and pull requests are welcome at:  
 <https://github.com/rkrug/rkagi>
+
+---
+
+## Disclaimer
+
+This package is provided **as is**, without warranty of any kind, express or implied, including but not limited to fitness for a particular purpose, merchantability, or non-infringement.
+
+The authors and contributors are not liable for any claim, damages, or other liability arising from the use of this software. Users are responsible for validating outputs and assessing suitability for their own workflows and decisions.
+
+---
+
+## AI-Assisted Development Notice
+
+Parts of this package's code, tests, and documentation were developed or refined with AI coding assistants (for example Codex/Claude-style tools) under human direction and review.
+
+AI-generated content may contain mistakes or omissions. Final responsibility for verification, testing, and release quality remains with the maintainers.
 
 ---
 

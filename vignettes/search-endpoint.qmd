@@ -1,0 +1,158 @@
+---
+title: "rkagi Search Endpoint Guide"
+author: "Rainer Krug"
+format: html
+vignette: >
+  %\VignetteIndexEntry{rkagi Search Endpoint Guide}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+execute:
+  echo: true
+  warning: false
+  message: false
+  eval: false
+---
+
+# Search Endpoint: From Question to Reusable Search Pipeline
+
+The Search endpoint is usually the first place where users build production workflows with `rkagi`.
+
+This guide follows one realistic path: starting from a single question, refining the query syntax, scaling to batches, and choosing an error strategy that matches your use case.
+
+## Start with a reusable connection
+
+```r
+library(rkagi)
+
+conn <- kagi_connection(
+  api_key = function() keyring::key_get("API_kagi")
+)
+```
+
+You create this once and reuse it for every request in your script or project.
+
+## Build one precise search query
+
+Suppose you are collecting policy reports related to biodiversity. You want PDFs and DOCX files, hosted on specific sites, with year hints in the URL.
+
+```r
+q <- search_query(
+  query = 'biodiversity "annual report"',
+  filetype = c("pdf", "docx"),
+  site = c("example.com", "gov"),
+  inurl = c("2024", "report"),
+  intitle = "summary",
+  expand = FALSE
+)
+```
+
+`q` is a named list. Even with a single query, this is useful because the same downstream code works for one query or one hundred.
+
+If you want to validate what was built, open it directly in a browser:
+
+```r
+open_search_query(q[[1]])
+```
+
+## Execute the request and persist results
+
+```r
+out_single <- "search_single"
+dir.create(out_single, recursive = TRUE, showWarnings = FALSE)
+
+kagi_request(
+  connection = conn,
+  query = q[[1]],
+  limit = 5,
+  output = out_single,
+  overwrite = TRUE
+)
+
+list.files(out_single, full.names = TRUE)
+```
+
+At this point you have stable JSON output that can be inspected, versioned, and reprocessed.
+
+## Scale from single query to query grid
+
+If you monitor multiple themes and sources, use `expand = TRUE` to generate combinations.
+
+```r
+q_many <- search_query(
+  query = c("biodiversity indicators", "ecosystem services"),
+  site = c("ipbes.net", "cbd.int"),
+  filetype = c("pdf", "docx"),
+  expand = TRUE
+)
+
+length(q_many)
+```
+
+Run them as a batch:
+
+```r
+out_batch <- "search_batch"
+dir.create(out_batch, recursive = TRUE, showWarnings = FALSE)
+
+kagi_request(
+  connection = conn,
+  query = q_many,
+  limit = 3,
+  output = out_batch,
+  overwrite = TRUE,
+  workers = 2
+)
+```
+
+This pattern is appropriate for recurring jobs such as weekly monitoring.
+
+## Choose your failure policy explicitly
+
+For interactive work or CI where failures should stop execution, use strict mode:
+
+```r
+kagi_request(
+  connection = conn,
+  query = q[[1]],
+  limit = 1,
+  output = "search_strict",
+  overwrite = TRUE,
+  error_mode = "stop"
+)
+```
+
+For long-running collection pipelines where partial progress is better than full abort, use graceful mode:
+
+```r
+kagi_request(
+  connection = conn,
+  query = q_many,
+  limit = 1,
+  output = "search_graceful",
+  overwrite = TRUE,
+  workers = 2,
+  error_mode = "write_dummy"
+)
+```
+
+In graceful mode, failed requests write dummy JSON records with `data = null` plus error metadata, and a warning is issued.
+
+## Convert search JSON to parquet for analysis
+
+Once collection is complete, convert the JSON folder to parquet:
+
+```r
+kagi_request_parquet(
+  input_json = out_batch,
+  output = "search_batch_parquet",
+  overwrite = TRUE
+)
+```
+
+Parquet output is easier to query downstream in analytics pipelines.
+
+## Operational recommendations
+
+- Keep query construction and execution in separate script sections.
+- Use meaningful output folder names tied to run date or topic.
+- Use `error_mode = "stop"` for QA/CI and `"write_dummy"` for large unattended runs.

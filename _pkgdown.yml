@@ -1,4 +1,12 @@
 url: https://rkrug.github.io/rkagi/
+destination: _site
 template:
   bootstrap: 5
-
+articles:
+  - title: Guides
+    contents:
+      - quickstart
+      - search-endpoint
+      - enrich-endpoint
+      - summarize-endpoint
+      - fastgpt-endpoint

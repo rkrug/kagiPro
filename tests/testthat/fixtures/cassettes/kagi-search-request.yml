@@ -1,0 +1,27 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://kagi.com/api/v0/search?q=openalex+api&limit=1
+  response:
+    status: 200
+    headers:
+      x-request-id: 0e9dcc7cdde4f56e9224f11e736aa8d9
+      x-kagi-trace: 0e9dcc7cdde4f56e9224f11e736aa8d9
+      cache-control: no-store
+      content-type: application/json
+      content-encoding: gzip
+      content-length: '359'
+      via: 1.1 google
+      date: Wed, 08 Apr 2026 12:16:43 GMT
+      x-frame-options: SAMEORIGIN
+      strict-transport-security: max-age=31536000; includeSubDomains; preload
+      alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      string: '{"meta":{"id":"0e9dcc7cdde4f56e9224f11e736aa8d9","node":"europe-west4","ms":582,"api_balance":102.496337},"data":[{"t":0,"url":"https://developers.openalex.org/api-reference/introduction","title":"API
+        Overview - OpenAlex Developers","snippet":"The OpenAlex API provides access
+        to a comprehensive catalog of scholarly works, authors, sources, institutions,
+        topics, and more. New to OpenAlex? Start with ..."},{"t":1,"list":["openalex
+        api documentation","openalex api limit","openalex api python","openalex api
+        search"]}]}'
+  recorded_at: 2026-04-08 12:16:41
+recorded_with: VCR-vcr/2.0.0

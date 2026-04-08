@@ -6,7 +6,10 @@
 ^\.Rcheck$
 ^\.\.Rcheck$
 ^vignettes/.*\.html$
+^vignettes/\.quarto$
 ^_pkgdown\.yml$
-^docs$
+^_site$
 ^pkgdown$
 ^\.github$
+^NEWS.md$
+^PROJECT_DESIGN.md$

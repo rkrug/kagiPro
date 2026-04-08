@@ -1,0 +1,96 @@
+http_interactions:
+- request:
+    method: POST
+    uri: https://kagi.com/api/v0/fastgpt
+    body:
+      string: '{"query":"What is Python 3.11?","cache":true,"web_search":true}'
+  response:
+    status: 200
+    headers:
+      x-request-id: 54c06ae37f0cecce2a639f7e44fc8030
+      x-kagi-trace: 54c06ae37f0cecce2a639f7e44fc8030
+      cache-control: no-store
+      content-type: application/json
+      content-encoding: gzip
+      content-length: '2016'
+      via: 1.1 google
+      date: Wed, 08 Apr 2026 12:16:44 GMT
+      x-frame-options: SAMEORIGIN
+      strict-transport-security: max-age=31536000; includeSubDomains; preload
+      alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      string: '{"meta":{"id":"54c06ae37f0cecce2a639f7e44fc8030","node":"europe-west4","ms":12,"api_balance":102.492337},"data":{"output":"**Python
+        3.11** is a significant release of the Python programming language, introducing
+        numerous new features and optimizations 【2】 【7】. It is known for its performance
+        improvements, with the Faster CPython Project contributing to speeds that
+        are 10-60% faster than Python 3.10, averaging a 1.22x speedup on standard
+        benchmarks 【2】.\n\nKey enhancements in Python 3.11 include:\n\n*   **\"Frozen\"
+        Core Modules**: Essential modules for Python startup are now \"frozen,\" meaning
+        their Code Objects and bytecode are statically allocated by the interpreter.
+        This streamlines the module execution process 【1】.\n*   **Faster Function
+        Calls**: Python 3.11 optimizes function calls by directly \"jumping\" to the
+        new code within a new frame when a Python function calls another Python function.
+        This avoids the overhead of calling the C interpreter function altogether,
+        effectively limiting pure Python recursion to what is safe for the C stack
+        【1】.\n\nPython 3.11.15 is the latest documentation version for this release
+        series 【6】 【4】. However, Python 3.11 is no longer receiving regular bug fixes,
+        and Python 3.11.9 was the last version to provide binary installers 【4】 【8】.\n\nPython
+        itself is described as an interpreted, interactive, object-oriented programming
+        language that supports multiple programming paradigms 【3】. The \"What''s New
+        in Python\" series provides detailed explanations of changes between major
+        Python versions 【5】.","tokens":0,"references":[{"title":"What’s New In Python
+        3.11 — Python 3.14.4 documentation","url":"https://docs.python.org/3/whatsnew/3.11.html","citation_contribution":546,"snippet":"In
+        Python 3.11, the core modules essential for Python startup are “frozen”. This
+        means that their Code Objects (and bytecode) are statically allocated by the
+        interpreter. This reduces the steps in module execution process toThis effectively
+        limits pure Python recursion to what’s safe for the C stack. In 3.11, when
+        CPython detects Python code calling another Python function, it sets up a
+        new frame, and “jumps” to the new code inside the new frame. This avoids calling
+        the C interpreting function altogether.","is_search_result":true},{"title":"Python
+        Release Python 3.11.0 | Python.org","url":"https://www.python.org/downloads/release/python-3110/","citation_contribution":320,"snippet":"Python
+        3.11.0 is the newest major release of the Python programming language, and
+        it contains many new features and optimizations.The Faster CPython Project
+        is already yielding some exciting results. Python 3.11 is up to 10-60% faster
+        than Python 3.10. On average, we measured a 1.22x speedup on the standard
+        benchmark suite.","is_search_result":true},{"title":"General Python FAQ","url":"https://docs.python.org/3.11/faq/general.html","citation_contribution":141,"snippet":"General
+        Information ¶ What is Python? ¶ Python is an interpreted, interactive, object-oriented
+        programming language. It incorporates modules, exceptions, dynamic typing,
+        very high level dynamic data types, and classes. It supports multiple programming
+        paradigms beyond object-oriented programming, such as procedural and functional
+        programming.","is_search_result":true},{"title":"Python Release Python 3.11.15","url":"https://www.python.org/downloads/latest/python3.11/","citation_contribution":131,"snippet":"Python
+        3.11 isn''t receiving regular bug fixes anymore, and binary installers are
+        no longer provided for it. Python 3.11.9 was the last full bugfix release
+        of Python 3.11 with binary installers.","is_search_result":true},{"title":"What’s
+        New in Python","url":"https://docs.python.org/3.11/whatsnew/","citation_contribution":106,"snippet":"The
+        “What’s New in Python” series of essays takes tours through the most important
+        changes between major Python versions. They are a “must read” for anyone wishing
+        to stay up-to-date after a new re...","is_search_result":true},{"title":"3.11.15
+        Documentation","url":"https://docs.python.org/3.11/","citation_contribution":75,"snippet":"|
+        Python 3.11.15 documentation. Welcome!Or all \"What''s new\" documents since
+        Python 2.0. Tutorial Start here: a tour of Python''s syntax and features.
+        Library reference Standard library and builtins. Language reference Syntax
+        and language elements. Python setup and usage How to install, configure, and
+        use Python. Python HOWTOs In-depth topic manuals.","is_search_result":true},{"title":"Python
+        Release Python 3.11.9","url":"https://www.python.org/downloads/release/python-3119/","citation_contribution":0,"snippet":"Python
+        3.11.9 is the newest major release of the Python programming language, and
+        it contains many new features and optimizations.","is_search_result":true},{"title":"Python
+        Release Python 3.11.11","url":"https://www.python.org/downloads/release/python-31111/","citation_contribution":0,"snippet":"Python
+        3.11 isn''t receiving regular bug fixes anymore, and binary installers are
+        no longer provided for it. Python 3.11.9 was the last full bugfix release
+        of Python 3.11 with binary installers.","is_search_result":true}],"references_text":"<div
+        class=\"_0_quick_answer_links\"><ol><li><a href=\"https://docs.python.org/3/whatsnew/3.11.html\"
+        >What’s New In Python 3.11 — Python 3.14.4 documentation</a> <span class=\"__domain-name\">docs.python.org</span></li>\n<li><a
+        href=\"https://www.python.org/downloads/release/python-3110/\" >Python Release
+        Python 3.11.0 | Python.org</a> <span class=\"__domain-name\">www.python.org</span></li>\n<li><a
+        href=\"https://docs.python.org/3.11/faq/general.html\" >General Python FAQ</a>
+        <span class=\"__domain-name\">docs.python.org</span></li>\n<li><a href=\"https://www.python.org/downloads/latest/python3.11/\"
+        >Python Release Python 3.11.15</a> <span class=\"__domain-name\">www.python.org</span></li>\n<li><a
+        href=\"https://docs.python.org/3.11/whatsnew/\" >What’s New in Python</a>
+        <span class=\"__domain-name\">docs.python.org</span></li>\n<li><a href=\"https://docs.python.org/3.11/\"
+        >3.11.15 Documentation</a> <span class=\"__domain-name\">docs.python.org</span></li>\n<li><a
+        href=\"https://www.python.org/downloads/release/python-3119/\" >Python Release
+        Python 3.11.9</a> <span class=\"__domain-name\">www.python.org</span></li>\n<li><a
+        href=\"https://www.python.org/downloads/release/python-31111/\" >Python Release
+        Python 3.11.11</a> <span class=\"__domain-name\">www.python.org</span></li></ol></div>"}}'
+  recorded_at: 2026-04-08 12:16:43
+recorded_with: VCR-vcr/2.0.0
