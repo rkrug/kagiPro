@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Kagi API Client for R">
-<meta name="description" content="A hybrid S3-based client for Kagi APIs (Search, Summarizer, FastGPT, Enrich) with httr2-style requests and endpoint-specific parsers.">
-<meta property="og:description" content="A hybrid S3-based client for Kagi APIs (Search, Summarizer, FastGPT, Enrich) with httr2-style requests and endpoint-specific parsers.">
+<meta name="description" content="User-friendly R client for the Kagi APIs (Search, Enrich, Summarizer, and FastGPT). Build endpoint-specific query objects, run single or batch requests with one reusable connection, and write reproducible JSON outputs for analysis pipelines. Includes optional graceful error handling with dummy outputs and JSON-to-parquet conversion for downstream workflows.">
+<meta property="og:description" content="User-friendly R client for the Kagi APIs (Search, Enrich, Summarizer, and FastGPT). Build endpoint-specific query objects, run single or batch requests with one reusable connection, and write reproducible JSON outputs for analysis pipelines. Includes optional graceful error handling with dummy outputs and JSON-to-parquet conversion for downstream workflows.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">rkagi</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,12 +32,8 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/quickstart.html">rkagi Quickstart Guide</a></li>
-  </ul>
-</li>
+<li class="nav-item"><a class="nav-link" href="articles/index.html">Articles</a></li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -69,6 +65,8 @@
 <strong>Enrich API</strong> — get higher-signal results from specialized indices</li>
 <li>
 <strong>Universal Summarizer</strong> — summarize text or URLs in one call</li>
+<li>
+<strong>FastGPT API</strong> — ask grounded LLM questions with optional web context</li>
 </ul>
 <p>The package follows the <a href="https://ropensci.org" class="external-link">rOpenSci</a> style for API clients:</p>
 <ul>
@@ -99,8 +97,7 @@ Store your API key securely in your system keychain:</p>
 <span><span class="fu">keyring</span><span class="fu">::</span><span class="fu"><a href="https://keyring.r-lib.org/reference/key_get.html" class="external-link">key_set</a></span><span class="op">(</span><span class="st">"API_kagi"</span><span class="op">)</span></span></code></pre></div>
 <p>The package will resolve the key at request time with:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/new_kagi_connection.html">new_kagi_connection</a></span><span class="op">(</span></span>
-<span>  endpoint <span class="op">=</span> <span class="st">"search"</span>,</span>
+<code class="sourceCode R"><span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/kagi_connection.html">kagi_connection</a></span><span class="op">(</span></span>
 <span>  api_key  <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu">keyring</span><span class="fu">::</span><span class="fu"><a href="https://keyring.r-lib.org/reference/key_get.html" class="external-link">key_get</a></span><span class="op">(</span><span class="st">"API_kagi"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <hr>
@@ -112,15 +109,25 @@ Store your API key securely in your system keychain:</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rkrug.github.io/rkagi/">rkagi</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Build a query</span></span>
-<span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/build_kagi_query.html">build_kagi_query</a></span><span class="op">(</span></span>
+<span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/search_query.html">search_query</a></span><span class="op">(</span></span>
 <span>  query    <span class="op">=</span> <span class="st">'biodiversity "annual report"'</span>,</span>
 <span>  filetype <span class="op">=</span> <span class="st">"pdf"</span>,</span>
-<span>  site     <span class="op">=</span> <span class="st">"example.com"</span></span>
+<span>  site     <span class="op">=</span> <span class="st">"example.com"</span>,</span>
+<span>  expand   <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Perform a one-liner search</span></span>
-<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/kagi_search_once.html">kagi_search_once</a></span><span class="op">(</span><span class="va">q</span>, limit <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/kagi_hits.html">kagi_hits</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Execute request and write JSON output</span></span>
+<span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/kagi_connection.html">kagi_connection</a></span><span class="op">(</span>api_key <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu">keyring</span><span class="fu">::</span><span class="fu"><a href="https://keyring.r-lib.org/reference/key_get.html" class="external-link">key_get</a></span><span class="op">(</span><span class="st">"API_kagi"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="st">"rkagi-search-"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">out</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/kagi_request.html">kagi_request</a></span><span class="op">(</span></span>
+<span>  connection <span class="op">=</span> <span class="va">conn</span>,</span>
+<span>  query <span class="op">=</span> <span class="va">q</span>,</span>
+<span>  limit <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  output <span class="op">=</span> <span class="va">out</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
@@ -128,6 +135,8 @@ Store your API key securely in your system keychain:</p>
 </h2>
 <p>A detailed <strong>Quickstart vignette</strong> is included and available at:<br>
 👉 <a href="https://rkrug.github.io/rkagi/articles/quickstart.html" class="uri">https://rkrug.github.io/rkagi/articles/quickstart.html</a></p>
+<p>Endpoint guides are available at: - <a href="https://rkrug.github.io/rkagi/articles/search-endpoint.html" class="uri">https://rkrug.github.io/rkagi/articles/search-endpoint.html</a> - <a href="https://rkrug.github.io/rkagi/articles/enrich-endpoint.html" class="uri">https://rkrug.github.io/rkagi/articles/enrich-endpoint.html</a> - <a href="https://rkrug.github.io/rkagi/articles/summarize-endpoint.html" class="uri">https://rkrug.github.io/rkagi/articles/summarize-endpoint.html</a> - <a href="https://rkrug.github.io/rkagi/articles/fastgpt-endpoint.html" class="uri">https://rkrug.github.io/rkagi/articles/fastgpt-endpoint.html</a></p>
+<p>AI-agent skills (for Codex/Claude-style workflows) are packaged under: - <code>inst/skills/</code> - <code>inst/skills/README.md</code> (index and selection rules)</p>
 <p>The full reference and function documentation is published via <strong>pkgdown</strong> at:<br>
 👉 <a href="https://rkrug.github.io/rkagi/" class="uri">https://rkrug.github.io/rkagi/</a></p>
 <hr>
@@ -136,6 +145,20 @@ Store your API key securely in your system keychain:</p>
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
 <p>Bug reports and pull requests are welcome at:<br><a href="https://github.com/rkrug/rkagi" class="external-link uri">https://github.com/rkrug/rkagi</a></p>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="disclaimer">Disclaimer<a class="anchor" aria-label="anchor" href="#disclaimer"></a>
+</h2>
+<p>This package is provided <strong>as is</strong>, without warranty of any kind, express or implied, including but not limited to fitness for a particular purpose, merchantability, or non-infringement.</p>
+<p>The authors and contributors are not liable for any claim, damages, or other liability arising from the use of this software. Users are responsible for validating outputs and assessing suitability for their own workflows and decisions.</p>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="ai-assisted-development-notice">AI-Assisted Development Notice<a class="anchor" aria-label="anchor" href="#ai-assisted-development-notice"></a>
+</h2>
+<p>Parts of this package’s code, tests, and documentation were developed or refined with AI coding assistants (for example Codex/Claude-style tools) under human direction and review.</p>
+<p>AI-generated content may contain mistakes or omissions. Final responsibility for verification, testing, and release quality remains with the maintainers.</p>
 <hr>
 </div>
 <div class="section level2">
@@ -178,7 +201,7 @@ Store your API key securely in your system keychain:</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
