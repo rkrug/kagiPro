@@ -3,6 +3,7 @@
 S3method(print,kagi_connection)
 S3method(print,kagi_enrich_web_query)
 S3method(print,kagi_search_query)
+S3method(print,kagi_summarize_query)
 export(enrich_news_query)
 export(enrich_web_query)
 export(kagi_connection)

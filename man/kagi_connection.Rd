@@ -22,15 +22,11 @@ a function that resolves the key lazily at request time
 
 \item{max_tries}{Integer scalar. Maximum number of retry attempts
 for transient errors. Defaults to \code{3}.}
-
-\item{endpoint}{Character scalar. Specific endpoint to use
-(e.g. \code{"search"}, \code{"enrich"}, \code{"summarize"}). Must be non-empty.}
 }
 \value{
 An object of class \strong{\code{kagi_connection}} with components:
 \describe{
 \item{\code{base_url}}{Base API URL.}
-\item{\code{endpoint}}{Endpoint string.}
 \item{\code{api_key}}{API key (or a function to resolve it).}
 \item{\code{max_tries}}{Maximum retry attempts.}
 }
@@ -38,20 +34,19 @@ An object of class \strong{\code{kagi_connection}} with components:
 \description{
 Build a typed S3 object of class \strong{\code{kagi_connection}} which holds the
 basic configuration required to talk to the Kagi API. This includes
-the API base URL, endpoint, authentication key, and retry settings.
+the API base URL, authentication key, and retry settings.
 }
 \examples{
 \dontrun{
 # Basic connection (API key from env var)
-conn <- new_kagi_connection(endpoint = "search")
+conn <- kagi_connection()
 conn
 
 # Explicit API key
-conn2 <- new_kagi_connection(endpoint = "search", api_key = "my-key")
+conn2 <- kagi_connection(api_key = "my-key")
 
 # Lazy API key via keyring
-conn3 <- new_kagi_connection(endpoint = "search",
-                             api_key = function() keyring::key_get("API_kagi"))
+conn3 <- kagi_connection(api_key = function() keyring::key_get("API_kagi"))
 }
 
 }

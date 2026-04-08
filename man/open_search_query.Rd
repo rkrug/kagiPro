@@ -7,7 +7,7 @@
 open_search_query(query, session_token = NULL)
 }
 \arguments{
-\item{query}{A full query string (typically from build_kagi_q()).}
+\item{query}{A full query string (typically from [search_query()]).}
 
 \item{session_token}{Optional Kagi session token for private search
 (see your Kagi account's "Session Link").}

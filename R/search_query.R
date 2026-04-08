@@ -24,7 +24,7 @@
 #'   [open_search_query()] for inspection.
 #'
 #' @return A named list containing the query strings of type `kagi_search_query`,
-#'   to be used in [kagi_rerquest()].
+#'   to be used in [kagi_request()].
 #'
 #' @details
 #' This helper makes it easy to build reproducible, complex queries with

@@ -1,6 +1,6 @@
 #' Open a Kagi search in the browser
 #'
-#' @param query A full query string (typically from build_kagi_q()).
+#' @param query A full query string (typically from [search_query()]).
 #' @param session_token Optional Kagi session token for private search
 #'   (see your Kagi account's "Session Link").
 #' @export

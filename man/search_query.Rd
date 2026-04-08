@@ -41,7 +41,7 @@ query is immediately opened in the default web browser via
 }
 \value{
 A named list containing the query strings of type \code{kagi_search_query},
-to be used in \code{\link[=kagi_rerquest]{kagi_rerquest()}}.
+to be used in \code{\link[=kagi_request]{kagi_request()}}.
 }
 \description{
 Construct one or more query strings for the Kagi Search API by combining

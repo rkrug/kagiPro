@@ -43,8 +43,7 @@ keyring::key_set("API_kagi")
 The package will resolve the key at request time with:
 
 ```r
-conn <- new_kagi_connection(
-  endpoint = "search",
+conn <- kagi_connection(
   api_key  = function() keyring::key_get("API_kagi")
 )
 ```
@@ -57,15 +56,25 @@ conn <- new_kagi_connection(
 library(rkagi)
 
 # Build a query
-q <- build_kagi_query(
+q <- search_query(
   query    = 'biodiversity "annual report"',
   filetype = "pdf",
-  site     = "example.com"
+  site     = "example.com",
+  expand   = FALSE
 )
 
-# Perform a one-liner search
-res <- kagi_search_once(q, limit = 3)
-kagi_hits(res)
+# Execute request and write JSON output
+conn <- kagi_connection(api_key = function() keyring::key_get("API_kagi"))
+out <- tempfile("rkagi-search-")
+dir.create(out, recursive = TRUE, showWarnings = FALSE)
+
+kagi_request(
+  connection = conn,
+  query = q,
+  limit = 3,
+  output = out,
+  overwrite = TRUE
+)
 ```
 
 ---

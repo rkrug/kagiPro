@@ -7,6 +7,6 @@
 ^\.\.Rcheck$
 ^vignettes/.*\.html$
 ^_pkgdown\.yml$
-^docs$
+^_site$
 ^pkgdown$
 ^\.github$

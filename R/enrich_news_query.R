@@ -24,8 +24,8 @@
 #'   query is immediately opened in the default web browser via
 #'   [open_search_query()] for inspection.
 #'
-#' @return A named list containing the query strings of type `kagi_search_query`,
-#'   to be used in [kagi_rerquest()].
+#' @return A named list containing query strings of class
+#'   `kagi_enrich_news_query`, to be used in [kagi_request()].
 #'
 #' @details
 #' This helper makes it easy to build reproducible, complex queries with

@@ -23,8 +23,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' conn <- new_kagi_connection(endpoint = "summarize")
-#' req <- new_kagi_summarize(conn, text = "Lorem ipsum")
+#' req <- summarize_query(text = "Lorem ipsum")
 #' req
 #' }
 #'
