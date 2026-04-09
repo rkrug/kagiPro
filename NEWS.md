@@ -2,13 +2,33 @@
 
 ## Features
 
+- Added `kagi_fetch()` as a high-level project-folder workflow helper with
+  endpoint-scoped outputs (`<project>/<endpoint>/json` and
+  `<project>/<endpoint>/parquet`).
 - Added endpoint-specific query support for FastGPT via `query_fastgpt()`.
-- Added OpenAlex bridge helper `add_sbstract_to_parquet()` to produce strict
-  `id` / `Title` / `Abstract` tables from Search + Summarize outputs.
+- Added modular corpus enrichment pipeline for search-like corpora:
+  - `download_content()`
+  - `content_markdown()`
+  - `markdown_abstract()`
+  with endpoint/query partitioned output under
+  `<project>/<endpoint>/{content,markdown,abstract}`.
+- Added pluggable text summarization backends:
+  - `summarize_with_openai()`
+  - `summarize_with_kagi()` (text-based summarizer usage).
+- Added `read_corpus()` with optional abstract linking (`abstracts = TRUE`) by
+  `id + query`.
 - Standardized query constructor outputs to named lists across endpoints.
 - Extended `kagi_request()` with `error_mode` (`"stop"`, `"write_dummy"`) for strict vs resilient execution modes.
 - Improved handling of mixed query lists so long batch runs can continue with structured dummy outputs on failure.
 - Kept JSON-to-parquet as a first-class path via `kagi_request_parquet()` for downstream analytics.
+- Added low-level `00_in.progress` marker lifecycle to request/parquet runs for
+  folder-state visibility during long jobs.
+- Added metadata persistence in `kagi_request()` for replayable query runs:
+  - per-query `_query_meta.json`
+- Added `kagi_update_query()` to rerun by `query_name` across matching
+  endpoints and refresh only touched parquet `query=<name>` partitions.
+- Added `clean_request()` to remove JSON request artifacts project-wide while
+  preserving `_query_meta.json` per query (with `dry_run` space estimates).
 - Added AI-agent skill scaffolding under `inst/skills`:
   - `maintainer-workflow`
   - `user-search`, `user-enrich`, `user-summarize`, `user-fastgpt`
@@ -29,6 +49,11 @@
   - `enrich_news_query()` -> `query_enrich_news()`
   - `summarize_query()` -> `query_summarize()`
   - `fastgpt_query()` -> `query_fastgpt()`
+- Removed `add_sbstract_to_parquet()`. Abstract creation is now handled only
+  via the modular content pipeline (`download_content()` ->
+  `content_markdown()` -> `markdown_abstract()`).
+- `kagi_request_parquet()` is JSON-to-parquet conversion only and no longer
+  accepts abstract-augmentation arguments.
 - Query constructors consistently return named lists. Code that previously assumed a bare single query object may require `[[1]]` indexing in some direct calls.
 - Error behavior can now be configured explicitly; strict failure remains default, but resilient mode writes dummy payloads and warnings instead of stopping.
 

@@ -23,6 +23,8 @@ This document is intended for AI assistants (for example Codex, Claude Code, and
 
 3. Reproducibility over implicit behavior.
    Requests write JSON files to disk. File-based outputs are treated as source-of-truth artifacts.
+   Query replay metadata is persisted per query (`_query_meta.json`) to support
+   deterministic re-runs.
 
 4. Predictable scaling from single to batch.
    Constructors return named lists consistently so one-query and many-query workflows use the same calling pattern.
@@ -32,9 +34,9 @@ This document is intended for AI assistants (for example Codex, Claude Code, and
 
 6. Analysis handoff as a first-class workflow.
    `kagi_request_parquet()` converts JSON collections to parquet for downstream processing.
-7. Interop-first adapters.
-   Additive bridge helpers (for example OpenAlex-style vector input) should expose strict
-   downstream-friendly schemas without changing core request contracts.
+7. Modular enrichment pipeline.
+   Content download, markdown extraction, and abstract generation are separate
+   steps (`download_content()` -> `content_markdown()` -> `markdown_abstract()`).
 
 ## Public Workflow Contract
 
@@ -42,8 +44,8 @@ Expected user flow:
 
 1. Create a connection with `kagi_connection()`.
 2. Build query objects using endpoint-specific constructors.
-3. Execute with `kagi_request()` into an output directory.
-4. Optionally convert with `kagi_request_parquet()`.
+3. Preferred: execute with `kagi_fetch()` into endpoint-scoped project folders.
+4. Low-level alternative: `kagi_request()` + `kagi_request_parquet()`.
 
 This contract should remain stable across releases.
 
@@ -56,6 +58,7 @@ Current endpoint constructors:
 - `query_enrich_news()`
 - `query_summarize()`
 - `query_fastgpt()`
+- `kagi_fetch()` (high-level orchestrator)
 
 All constructors should:
 
@@ -88,6 +91,7 @@ Design implications:
 - Never require parquet conversion for core package usage.
 - Prefer non-lossy conversion where possible.
 - Handle partial failures and dummy payloads without breaking conversion.
+- Keep query partitions (`query=<name>`) independently refreshable.
 
 ## Testing Philosophy
 
@@ -122,9 +126,31 @@ Narrative guidelines:
 Agent-oriented operational guidance is packaged in `inst/skills`.
 
 - `maintainer-workflow` covers implementation conventions, tests/cassettes, naming, and release hygiene.
+- `maintainer-corpus-pipeline` covers content/markdown/abstract internals and
+  corpus-link contracts.
+- `maintainer-release-sync` covers pre-release consistency checks across code,
+  docs, vignettes, skills, and changelog.
 - Endpoint user skills (`user-search`, `user-enrich`, `user-summarize`, `user-fastgpt`) mirror the endpoint vignettes.
+- `user-corpus-workflow` mirrors the end-to-end corpus vignette
+  (`vignettes/corpus-workflow.qmd`).
 
 Skills are intended to be strict execution guidance for coding agents and must remain aligned with package behavior and vignette examples.
+
+## Skill Mapping
+
+Preferred skill by workflow phase:
+
+1. Endpoint query construction and request execution:
+   use `user-search`, `user-enrich`, `user-summarize`, or `user-fastgpt`
+   depending on endpoint.
+2. End-to-end corpus build (`parquet` -> `content` -> `markdown` -> `abstract`):
+   use `user-corpus-workflow`.
+3. Internal pipeline changes (download/extraction/summarization/linking):
+   use `maintainer-corpus-pipeline`.
+4. Cross-cutting package changes (API behavior, tests, docs contracts):
+   use `maintainer-workflow`.
+5. Pre-release / merge final synchronization:
+   use `maintainer-release-sync`.
 
 ## Recent Change Summary (toward 0.4.0)
 
@@ -139,12 +165,23 @@ Key project-level changes reflected in this cycle:
   - `query_fastgpt()`
 - Added/expanded FastGPT endpoint support via `query_fastgpt()`.
 - Added graceful fallback behavior in `kagi_request()` with dummy outputs.
+- Added query replay metadata files (`_query_meta.json`) written by
+  `kagi_request()` as the single source of truth.
 - Ensured dummy outputs can flow through parquet conversion.
+- Added `kagi_update_query()` for query-name scoped reruns and parquet
+  partition refresh.
+- Added `clean_request()` to remove JSON request artifacts while preserving
+  per-query metadata for later reruns.
 - Strengthened tests around mixed success/failure request lists.
 - Consolidated cassette location and vcr helper setup.
 - Updated quickstart and added endpoint-focused vignettes.
 - Aligned pkgdown output and article organization.
-- Added OpenAlex-style bridge output via `add_sbstract_to_parquet()` with deterministic URL-hash IDs.
+- Replaced legacy abstract augmentation with a modular corpus pipeline:
+  `download_content()` -> `content_markdown()` -> `markdown_abstract()`.
+- Added pluggable content summarizers:
+  `summarize_with_openai()` and `summarize_with_kagi()`.
+- Added `read_corpus()` with optional abstract linking (`abstracts = TRUE`) on
+  `id + query`.
 - Added AI-agent skills under `inst/skills` for maintainer and endpoint-specific workflows.
 - Added standard disclaimer and AI-assisted development notice to README.
 - Removed unused legacy assets from `inst/` (old extdata, plantuml diagrams, query_test script).

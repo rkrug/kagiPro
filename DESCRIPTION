@@ -17,13 +17,16 @@ LazyData: true
 Depends:
     R (>= 4.2.0)
 Imports:
+    arrow,
     DBI, 
     digest,
+    dplyr,
     duckdb,
     future,
     future.apply,
     httr2,
     jsonlite,
+    ragnar,
     utils
 Suggests:
     here,

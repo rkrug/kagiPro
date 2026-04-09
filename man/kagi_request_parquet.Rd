@@ -9,9 +9,9 @@ kagi_request_parquet(
   output = NULL,
   add_columns = list(),
   overwrite = FALSE,
+  append = FALSE,
   verbose = TRUE,
-  delete_input = FALSE,
-  add_abstract = FALSE
+  delete_input = FALSE
 )
 }
 \arguments{
@@ -25,15 +25,14 @@ have to be provided as a named list, e.g. \code{list(column_1 = "value_1", colum
 
 \item{overwrite}{Logical indicating whether to overwrite \code{output}.}
 
+\item{append}{Logical indicating whether to append/update query partitions in
+an existing \code{output} directory without deleting untouched queries.}
+
 \item{verbose}{Logical indicating whether to print progress information.
 Defaults to \code{TRUE}}
 
 \item{delete_input}{Determines if the \code{input_json} should be deleted
 afterwards. Defaults to \code{FALSE}.}
-
-\item{add_abstract}{Logical. If \code{TRUE}, call \code{\link[=add_sbstract_to_parquet]{add_sbstract_to_parquet()}}
-after conversion to add an \code{Abstract} column for supported endpoint
-outputs (\code{search}, \code{enrich_web}, \code{enrich_news}, \code{enrich}).}
 }
 \value{
 Returns \code{output} invisibly if parquet files were written; otherwise
@@ -42,7 +41,7 @@ Returns \code{output} invisibly if parquet files were written; otherwise
 \description{
 Convert a directory of JSON files written by \code{\link[=kagi_request]{kagi_request()}} into an
 Apache Parquet dataset. JSON files are processed one-by-one and written as
-partitioned parquet by \code{page}.
+hive-partitioned parquet by \code{query}.
 }
 \details{
 The function uses DuckDB to read the JSON files and to create the

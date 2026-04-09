@@ -11,8 +11,8 @@ Use this skill for Search endpoint tasks aligned with `vignettes/search-endpoint
 
 1. Create `kagi_connection()`.
 2. Build query objects with `query_search()`.
-3. Execute with `kagi_request()`.
-4. Optionally convert with `kagi_request_parquet()`.
+3. Prefer `kagi_fetch()` for project-folder workflows.
+4. Use `kagi_request()` + `kagi_request_parquet()` for low-level control.
 
 Do not skip steps in guidance unless the user already provides a reusable connection.
 
@@ -21,6 +21,7 @@ Do not skip steps in guidance unless the user already provides a reusable connec
 - `kagi_connection()`
 - `query_search()`
 - `open_search_query()`
+- `kagi_fetch()`
 - `kagi_request()`
 - `kagi_request_parquet()`
 
@@ -37,4 +38,3 @@ Do not skip steps in guidance unless the user already provides a reusable connec
 - Mention `workers` when describing parallel execution.
 
 Read `references/workflow.md` for canonical flow and `references/examples.md` for endpoint-aligned snippets.
-

@@ -11,13 +11,14 @@ Use this skill for FastGPT tasks aligned with `vignettes/fastgpt-endpoint.qmd`.
 
 1. Create `kagi_connection()`.
 2. Build query objects with `query_fastgpt()`.
-3. Execute with `kagi_request()`.
-4. Optionally convert with `kagi_request_parquet()`.
+3. Prefer `kagi_fetch()` for project-folder workflows.
+4. Use `kagi_request()` + `kagi_request_parquet()` for low-level control.
 
 ## Allowed Function Set
 
 - `kagi_connection()`
 - `query_fastgpt()`
+- `kagi_fetch()`
 - `kagi_request()`
 - `kagi_request_parquet()`
 
@@ -28,4 +29,3 @@ Use this skill for FastGPT tasks aligned with `vignettes/fastgpt-endpoint.qmd`.
 - Recommend `error_mode = "write_dummy"` for unattended runs.
 
 Read `references/workflow.md` and `references/examples.md`.
-

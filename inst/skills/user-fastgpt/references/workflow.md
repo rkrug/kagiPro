@@ -6,9 +6,10 @@ Source of truth: `vignettes/fastgpt-endpoint.qmd`.
 
 1. Build connection.
 2. Build query sets with `query_fastgpt()`.
-3. Execute with `kagi_request()`.
-4. Use list queries for batch prompt runs.
-5. Convert with `kagi_request_parquet()` when needed.
+3. Preferred: execute end-to-end with `kagi_fetch(project_folder = ...)`.
+4. Low-level path: execute with `kagi_request()`.
+5. Use list queries for batch prompt runs.
+6. Convert with `kagi_request_parquet()` when needed.
 
 ## Error Strategy
 
@@ -19,4 +20,3 @@ Source of truth: `vignettes/fastgpt-endpoint.qmd`.
 
 - Keep prompts concise in examples.
 - Keep behavior statements aligned with current docs/tests.
-

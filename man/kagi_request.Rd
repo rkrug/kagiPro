@@ -13,7 +13,8 @@ kagi_request(
   append = FALSE,
   workers = 1,
   verbose = FALSE,
-  error_mode = c("stop", "write_dummy")
+  error_mode = c("stop", "write_dummy"),
+  metadata_request_args = list()
 )
 }
 \arguments{
@@ -39,6 +40,9 @@ instead of deleting it.}
 
 \item{error_mode}{Error handling mode. \code{"stop"} (default) throws on request
 errors. \code{"write_dummy"} writes a fallback JSON payload and returns \code{output}.}
+
+\item{metadata_request_args}{Optional named list persisted in replay metadata
+(\code{request_args}) for each query. Intended for higher-level orchestrators.}
 }
 \value{
 The normalized path to \code{output}.
@@ -57,4 +61,9 @@ If \code{query} is a list of query objects, requests are executed in parallel
 
 Files are written as \verb{\{endpoint\}_\{page\}.json} (for example \code{search_1.json}).
 Pagination is handled via \code{meta$next_cursor} when provided by the API.
+
+Query replay metadata is written alongside JSON outputs:
+\itemize{
+\item per query folder: \verb{_query_meta.json}
+}
 }

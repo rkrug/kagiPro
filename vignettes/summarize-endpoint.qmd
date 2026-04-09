@@ -63,7 +63,7 @@ Both calls return named lists, so execution stays consistent regardless of input
 ## Execute a normal summarize request
 
 ```r
-out_sum <- "summarize_output"
+out_sum <- "summarize_results"
 dir.create(out_sum, recursive = TRUE, showWarnings = FALSE)
 
 kagi_request(

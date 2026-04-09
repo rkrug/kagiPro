@@ -16,7 +16,7 @@ Apply this skill when tasks involve any of the following:
 - Changes in API behavior, error handling, or output contracts.
 - Versioning, changelog/release notes, and documentation synchronization.
 
-For endpoint-only user workflows, use `user-search`, `user-enrich`, `user-summarize`, or `user-fastgpt` instead.
+For endpoint-only user workflows, use `user-search`, `user-enrich`, `user-summarize`, `user-fastgpt`, or `user-corpus-workflow` instead.
 
 ## Required Design Principles
 

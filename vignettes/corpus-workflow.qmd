@@ -1,0 +1,191 @@
+---
+title: "kagiPro Corpus Workflow: Search to Abstract-Linked Corpus"
+author: "Rainer Krug"
+format: html
+vignette: >
+  %\VignetteIndexEntry{kagiPro Corpus Workflow: Search to Abstract-Linked Corpus}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+execute:
+  echo: true
+  warning: false
+  message: false
+  eval: false
+---
+
+# End-to-End Corpus Workflow (Multiple Queries)
+
+This vignette shows one complete, reproducible workflow focused on the Search
+endpoint:
+
+1. build multiple search queries,
+2. fetch JSON into a project folder,
+3. convert to parquet,
+4. download linked content,
+5. convert content to markdown,
+6. summarize markdown into abstract parquet files,
+7. read the final corpus with `read_corpus(abstracts = TRUE)`.
+
+The goal is to create a corpus that is ready for downstream vector/comparison
+workflows while preserving query-level partitions.
+
+## 1) Create connection and multi-query search input
+
+```r
+library(kagiPro)
+
+conn <- kagi_connection(
+  api_key = function() keyring::key_get("API_kagi")
+)
+
+q <- c(
+  biodiversity_search = query_search(
+    query = "biodiversity annual report",
+    filetype = c("pdf", "docx"),
+    expand = FALSE
+  )[[1]],
+  ecosystem_methods = query_search(
+    query = "ecosystem services valuation methods",
+    filetype = c("pdf", "docx"),
+    expand = FALSE
+  )[[1]]
+)
+```
+
+Using a named list keeps query names stable throughout JSON/parquet/content
+partitions (`query=<query_name>`).
+
+## 2) Fetch search results into endpoint-structured project folders
+
+```r
+project_folder <- "tests_complex"
+
+kagi_fetch(
+  connection = conn,
+  query = q,
+  project_folder = project_folder,
+  overwrite = TRUE
+)
+```
+
+This writes:
+
+- `tests_complex/search/json`
+- `tests_complex/search/parquet`
+
+## 3) (Optional) Explicit parquet conversion step
+
+If you run `kagi_request()` manually instead of `kagi_fetch()`, convert JSON to
+parquet explicitly:
+
+```r
+kagi_request_parquet(
+  input_json = file.path(project_folder, "search", "json"),
+  output = file.path(project_folder, "search", "parquet"),
+  overwrite = TRUE
+)
+```
+
+## 4) Download linked source content
+
+Download for all search queries in that endpoint:
+
+```r
+download_content(
+  project_folder = project_folder,
+  endpoint = "search",
+  query_name = NULL,   # all queries in `search`
+  workers = 4
+)
+```
+
+This writes binary/source files under:
+
+- `tests_complex/search/content/query=<query_name>/...`
+
+## 5) Convert downloaded content to markdown
+
+```r
+content_markdown(
+  project_folder = project_folder,
+  endpoint = "search",
+  query_name = NULL,   # all queries in `search`
+  workers = 4
+)
+```
+
+This writes markdown files under:
+
+- `tests_complex/search/markdown/query=<query_name>/...`
+
+## 6) Build query-level abstract parquet files
+
+Use OpenAI summarization:
+
+```r
+markdown_abstract(
+  project_folder = project_folder,
+  endpoint = "search",
+  query_name = NULL,   # all queries in `search`
+  summarizer_fn = summarize_with_openai,
+  model = "gpt-4.1-mini",
+  workers = 1          # sequential is recommended for OpenAI rate limits
+)
+```
+
+Or use Kagi summarization over extracted text:
+
+```r
+markdown_abstract(
+  project_folder = project_folder,
+  endpoint = "search",
+  query_name = NULL,
+  summarizer_fn = summarize_with_kagi,
+  model = "cecil",
+  connection = conn,
+  workers = 4
+)
+```
+
+Abstract parquet files are written to:
+
+- `tests_complex/search/abstract/query=<query_name>/...`
+
+## 7) Read corpus and link abstracts
+
+Read parquet only:
+
+```r
+ds <- read_corpus(
+  project_folder = project_folder,
+  endpoint = "search",
+  corpus = "parquet",
+  abstracts = FALSE
+)
+```
+
+Read parquet with linked abstracts (`id + query`):
+
+```r
+ds_abs <- read_corpus(
+  project_folder = project_folder,
+  endpoint = "search",
+  corpus = "parquet",
+  abstracts = TRUE,
+  silent = TRUE
+)
+
+tbl <- dplyr::collect(ds_abs)
+names(tbl)
+```
+
+At this stage, `tbl` is a query-partitioned search corpus with an additional
+`abstract` column, ready for downstream modeling and comparison workflows.
+
+## Practical Notes
+
+- Keep query names stable; they are your update/rebuild unit.
+- `download_content()`, `content_markdown()`, and `markdown_abstract()` all
+  support selector expansion (`endpoint = NULL` and/or `query_name = NULL`).
+- `read_corpus(abstracts = TRUE)` expects abstract parquet schema with lowercase
+  `abstract`.

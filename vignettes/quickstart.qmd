@@ -20,10 +20,31 @@ The package is intentionally structured around a stable pattern:
 
 1. Create query objects with endpoint-specific constructors.
 2. Reuse a single `kagi_connection()` object.
-3. Execute with `kagi_request()` and persist JSON responses.
-4. Optionally convert JSON output to parquet tables.
+3. Either use `kagi_fetch()` for project-folder workflows, or use
+   `kagi_request()` + `kagi_request_parquet()` directly.
+4. Keep JSON as the request audit trail, and parquet as analysis-ready output.
 
 Once this pattern is familiar, every endpoint follows the same operational logic.
+
+## Project-folder first workflow
+
+For endpoint-scoped project outputs (aligned with `openalexPro` conventions),
+use `kagi_fetch()`:
+
+```r
+q_project <- query_search("biodiversity policy", expand = FALSE)
+
+kagi_fetch(
+  connection = conn,
+  query = q_project,
+  project_folder = "kagi_project"
+)
+```
+
+This writes to:
+
+- `kagi_project/search/json`
+- `kagi_project/search/parquet`
 
 ## Install and load the package
 
@@ -198,18 +219,29 @@ kagi_request_parquet(
 ## Bridge to OpenAlex-style vector input
 
 If you want to pass results into `openalexPro`/`openalexVectorComp` workflows,
-use `add_sbstract_to_parquet()` to call Summarize for Search rows and write
-search parquet with an `Abstract` column.
+use the modular content pipeline: download content -> extract markdown ->
+summarize markdown.
 
 ```r
-out_search_with_abs <- add_sbstract_to_parquet(
-  connection = conn,
-  input_parquet = parquet_dir,
-  output = "search_with_abstract",
-  overwrite = TRUE
+download_content(
+  project_folder = "kagi_project",
+  endpoint = "search"
 )
 
-# parquet output now includes Abstract for downstream vector workflows
+content_markdown(
+  project_folder = "kagi_project",
+  endpoint = "search"
+)
+
+markdown_abstract(
+  project_folder = "kagi_project",
+  endpoint = "search",
+  summarizer_fn = summarize_with_openai,
+  model = "gpt-4.1-mini"
+)
+
+# abstract parquet output is written under:
+# kagi_project/search/abstract/query=<query_name>/
 ```
 
 `id` is a deterministic hash of normalized URL.
@@ -222,6 +254,7 @@ For deeper endpoint-specific workflows (batching patterns, robust error handling
 - `vignette("enrich-endpoint", package = "kagiPro")`
 - `vignette("summarize-endpoint", package = "kagiPro")`
 - `vignette("fastgpt-endpoint", package = "kagiPro")`
+- `vignette("corpus-workflow", package = "kagiPro")`
 
 ## Session info
 

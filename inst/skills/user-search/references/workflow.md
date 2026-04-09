@@ -7,9 +7,10 @@ Source of truth: `vignettes/search-endpoint.qmd`.
 1. Build connection:
    `conn <- kagi_connection(api_key = function() keyring::key_get("API_kagi"))`
 2. Build search query with `query_search()`.
-3. Execute with `kagi_request(connection = conn, query = ..., output = ..., overwrite = TRUE)`.
-4. For batches, pass a list query and optional `workers`.
-5. Convert with `kagi_request_parquet()` if tabular analysis is needed.
+3. Preferred: execute end-to-end with `kagi_fetch(connection = conn, query = ..., project_folder = ...)`.
+4. Low-level path: `kagi_request(connection = conn, query = ..., output = ..., overwrite = TRUE)`.
+5. For batches, pass a list query and optional `workers`.
+6. Convert with `kagi_request_parquet()` if tabular analysis is needed.
 
 ## Error Strategy
 
@@ -20,4 +21,3 @@ Source of truth: `vignettes/search-endpoint.qmd`.
 
 - Keep function names exactly as exported.
 - Do not describe unsupported parameters or response fields.
-

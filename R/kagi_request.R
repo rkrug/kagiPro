@@ -24,12 +24,17 @@
 #' @param verbose Logical indicating whether progress messages should be shown.
 #' @param error_mode Error handling mode. `"stop"` (default) throws on request
 #'   errors. `"write_dummy"` writes a fallback JSON payload and returns `output`.
+#' @param metadata_request_args Optional named list persisted in replay metadata
+#'   (`request_args`) for each query. Intended for higher-level orchestrators.
 #'
 #' @return The normalized path to `output`.
 #'
 #' @details
 #' Files are written as `{endpoint}_{page}.json` (for example `search_1.json`).
 #' Pagination is handled via `meta$next_cursor` when provided by the API.
+#'
+#' Query replay metadata is written alongside JSON outputs:
+#' - per query folder: `_query_meta.json`
 #'
 #' @md
 #'
@@ -50,9 +55,13 @@ kagi_request <- function(
   append = FALSE,
   workers = 1,
   verbose = FALSE,
-  error_mode = c("stop", "write_dummy")
+  error_mode = c("stop", "write_dummy"),
+  metadata_request_args = list()
 ) {
   error_mode <- match.arg(error_mode)
+  if (!is.list(metadata_request_args)) {
+    stop("`metadata_request_args` must be a list.", call. = FALSE)
+  }
 
   # Helper function -------------------------------------------------------
 
@@ -240,46 +249,78 @@ kagi_request <- function(
       )
     )
   ) {
+    is_query_object <- function(x) {
+      inherits(
+        x,
+        c(
+          "kagi_query_search",
+          "kagi_query_summarize",
+          "kagi_query_enrich_web",
+          "kagi_query_enrich_news",
+          "kagi_query_fastgpt"
+        )
+      )
+    }
+
     if (is.null(output)) {
       stop("No `output` output specified!")
     }
 
-    future::plan(future::multisession, workers = workers)
+    output_check(output, overwrite, append, verbose)
 
+    dir.create(output, recursive = TRUE, showWarnings = FALSE)
+    output <- normalizePath(output)
+    progress_file <- file.path(output, "00_in.progress")
+    file.create(progress_file)
+    success <- FALSE
     on.exit(
-      future::plan(future::sequential),
+      {
+        if (isTRUE(success)) {
+          unlink(progress_file)
+        }
+      },
       add = TRUE
     )
 
-    output_check(output, overwrite, append, verbose)
+    apply_one <- function(i) {
+      nm <- names(query)[i]
+      if (is.null(nm) || !nzchar(nm)) {
+        nm <- paste0("query_", i)
+      }
+      query_i <- query[[i]]
+      if (!is_query_object(query_i) && is.list(query_i) && length(query_i) == 1L && is_query_object(query_i[[1]])) {
+        query_i <- query_i[[1]]
+      }
+      attr(query_i, "query_name") <- nm
+      child_output <- file.path(output, nm)
+      kagi_request(
+        connection = connection,
+        query = query_i,
+        limit = limit,
+        output = child_output,
+        overwrite = FALSE,
+        append = TRUE,
+        verbose = verbose,
+        error_mode = error_mode,
+        metadata_request_args = metadata_request_args
+      )
+    }
 
-    result <- future.apply::future_lapply(
-      seq_along(query),
-      function(i) {
-        nm <- names(query)[i]
-        if (is.null(nm)) {
-          nm <- paste0("query_", i)
-        }
-        query_i <- query[[i]]
-        attr(query_i, "query_name") <- nm
-        child_output <- if (length(query) == 1L) {
-          output
-        } else {
-          file.path(output, nm)
-        }
-        kagi_request(
-          connection = connection,
-          query = query_i,
-          limit = limit,
-          output = child_output,
-          overwrite = FALSE,
-          append = TRUE,
-          verbose = verbose,
-          error_mode = error_mode
-        )
-      },
-      future.seed = TRUE
-    )
+    if (workers <= 1) {
+      result <- lapply(seq_along(query), apply_one)
+    } else {
+      future::plan(future::multisession, workers = workers)
+      on.exit(
+        future::plan(future::sequential),
+        add = TRUE
+      )
+      result <- future.apply::future_lapply(
+        seq_along(query),
+        apply_one,
+        future.seed = TRUE
+      )
+    }
+    success <- TRUE
     return(output)
   } else {
     # Argument checks --------------------------------------------------------
@@ -295,6 +336,17 @@ kagi_request <- function(
     dir.create(output, recursive = TRUE, showWarnings = FALSE)
 
     output <- normalizePath(output)
+    progress_file <- file.path(output, "00_in.progress")
+    file.create(progress_file)
+    success <- FALSE
+    on.exit(
+      {
+        if (isTRUE(success)) {
+          unlink(progress_file)
+        }
+      },
+      add = TRUE
+    )
 
     req <- switch(
       class(query)[[1]],
@@ -367,6 +419,23 @@ kagi_request <- function(
     }
 
     query_name <- attr(query, "query_name", exact = TRUE)
+    if (is.null(query_name) || !nzchar(query_name)) {
+      query_name <- "query_1"
+    }
+
+    query_class <- class(query)[[1]]
+    endpoint_name <- endpoint_from_query_class(query_class)
+    write_query_metadata(
+      query_dir = output,
+      query_name = query_name,
+      endpoint = endpoint_name,
+      query_class = query_class,
+      query_payload = serialize_query_payload(query, query_class = query_class),
+      request_args = utils::modifyList(
+        x = list(limit = limit),
+        val = metadata_request_args
+      )
+    )
 
     # Initialize results and page counter
     page <- 1
@@ -428,6 +497,7 @@ kagi_request <- function(
     }
     ###
 
+    success <- TRUE
     return(output)
   }
 }
