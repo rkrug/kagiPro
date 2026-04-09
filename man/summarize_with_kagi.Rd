@@ -33,6 +33,9 @@ summarize_with_kagi(
 \item{target_language}{Target language code.}
 
 \item{cache}{Cache flag forwarded to Kagi summarize endpoint.}
+
+\item{retry_max_tries}{Maximum number of HTTP retry attempts passed to
+[httr2::req_retry()].}
 }
 \value{
 A single summary string (or `NA_character_`).

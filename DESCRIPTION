@@ -26,6 +26,7 @@ Imports:
     future.apply,
     httr2,
     jsonlite,
+    rlang,
     ragnar,
     utils
 Suggests:
@@ -39,4 +40,6 @@ Suggests:
 VignetteBuilder: knitr, quarto
 RoxygenNote: 7.3.3
 Config/testthat/edition: 3
-URL: https://rkrug.github.io/kagiPro/
+URL: https://github.com/rkrug/kagiPro,
+    https://rkrug.github.io/kagiPro/
+BugReports: https://github.com/rkrug/kagiPro/issues

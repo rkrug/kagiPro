@@ -13,3 +13,5 @@
 ^\.github$
 ^NEWS.md$
 ^PROJECT_DESIGN.md$
+^tests_complex$
+^zenodo.csl$

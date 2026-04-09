@@ -116,7 +116,7 @@ kagi_update_query <- function(
     }
     effective_workers <- entry$request_args$workers %||% workers
 
-    query_list <- setNames(list(query_obj), query_name)
+    query_list <- stats::setNames(list(query_obj), query_name)
     json_dir <- file.path(project_folder, ep, "json")
     parquet_dir <- file.path(project_folder, ep, "parquet")
 

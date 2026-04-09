@@ -9,8 +9,7 @@ summarize_with_openai(
   model = "gpt-4.1-mini",
   api_key = Sys.getenv("API_openai", ""),
   base_url = "https://api.openai.com/v1",
-  system_prompt =
-    "Summarize the input text in 4 to 6 concise sentences for scientific/literature review workflows.",
+  system_prompt = "Summarize input text in 4-6 concise sentences for literature review.",
   retry_max_tries = 5
 )
 }
@@ -24,6 +23,9 @@ summarize_with_openai(
 \item{base_url}{OpenAI API base URL.}
 
 \item{system_prompt}{Prompt used to guide summarization behavior.}
+
+\item{retry_max_tries}{Maximum number of HTTP retry attempts passed to
+[httr2::req_retry()].}
 }
 \value{
 A single summary string (or `NA_character_`).

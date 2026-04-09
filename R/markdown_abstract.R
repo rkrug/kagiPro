@@ -229,6 +229,8 @@ write_single_parquet_file <- function(df, out_file, overwrite = TRUE) {
 #' @param api_key OpenAI API key. Defaults to `API_openai`.
 #' @param base_url OpenAI API base URL.
 #' @param system_prompt Prompt used to guide summarization behavior.
+#' @param retry_max_tries Maximum number of HTTP retry attempts passed to
+#'   [httr2::req_retry()].
 #'
 #' @return A single summary string (or `NA_character_`).
 #' @export
@@ -237,7 +239,7 @@ summarize_with_openai <- function(
   model = "gpt-4.1-mini",
   api_key = Sys.getenv("API_openai", ""),
   base_url = "https://api.openai.com/v1",
-  system_prompt = "Summarize the input text in 4 to 6 concise sentences for scientific/literature review workflows.",
+  system_prompt = "Summarize input text in 4-6 concise sentences for literature review.",
   retry_max_tries = 5
 ) {
   if (is.null(text) || !nzchar(trimws(as.character(text)))) {
@@ -283,6 +285,8 @@ summarize_with_openai <- function(
 #' @param summary_type Summarize mode (`"summary"` or `"takeaway"`).
 #' @param target_language Target language code.
 #' @param cache Cache flag forwarded to Kagi summarize endpoint.
+#' @param retry_max_tries Maximum number of HTTP retry attempts passed to
+#'   [httr2::req_retry()].
 #'
 #' @return A single summary string (or `NA_character_`).
 #' @export

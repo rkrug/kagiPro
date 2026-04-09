@@ -19,6 +19,7 @@
 #'
 #' @return An Arrow dataset/query when `return_data = FALSE`, otherwise a data
 #'   frame/tibble.
+#' @importFrom rlang .data
 #' @export
 read_corpus <- function(project_folder, endpoint, corpus = "parquet", return_data = FALSE, abstracts = FALSE, silent = FALSE) {
   if (!is.character(project_folder) || length(project_folder) != 1L || !nzchar(project_folder)) {
@@ -94,10 +95,22 @@ read_corpus <- function(project_folder, endpoint, corpus = "parquet", return_dat
         stop("Abstract dataset must contain an `abstract` column.", call. = FALSE)
       }
 
-      abstract_ds <- dplyr::select(abstract_ds, id, query, abstract)
+      abstract_ds <- dplyr::select(
+        abstract_ds,
+        .data$id,
+        .data$query,
+        .data$abstract
+      )
 
       result <- dplyr::left_join(result, abstract_ds, by = c("id", "query"))
-      result <- dplyr::mutate(result, abstract = ifelse(is.na(abstract), NA_character_, as.character(abstract)))
+      result <- dplyr::mutate(
+        result,
+        abstract = ifelse(
+          is.na(.data$abstract),
+          NA_character_,
+          as.character(.data$abstract)
+        )
+      )
     }
   }
 
