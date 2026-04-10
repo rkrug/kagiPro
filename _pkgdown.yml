@@ -6,6 +6,7 @@ articles:
   - title: Guides
     contents:
       - quickstart
+      - corpus-workflow
       - search-endpoint
       - enrich-endpoint
       - summarize-endpoint

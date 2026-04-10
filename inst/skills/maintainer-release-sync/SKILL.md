@@ -24,5 +24,14 @@ Use this skill for final consistency checks before release or merge.
 3. Breaking changes are explicitly listed in changelog.
 4. Skills align 1:1 with vignette terminology for user workflows.
 5. Release docs reflect current folder contracts and schema contracts.
+6. Before commit/merge, confirm the following are reviewed and updated if needed:
+   - `NEWS.md`
+   - `PROJECT_DESIGN.md`
+   - `README.md`
+   - `vignettes/*.qmd`
+7. Use a detailed commit message that includes:
+   - summary of behavioral changes,
+   - documentation and skills updates,
+   - test/check validation outcomes.
 
 Read `references/checklist.md` before final release actions.

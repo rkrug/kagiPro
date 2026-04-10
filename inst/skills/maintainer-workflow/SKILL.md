@@ -63,8 +63,8 @@ Read `references/testing-and-cassettes.md` before updating fixtures.
 For release-prep changes, execute this checklist:
 
 1. Bump version in `DESCRIPTION`.
-2. Update release notes/changelog (`NES.md`).
-3. Confirm docs are synchronized: README, quickstart, endpoint vignettes, man pages.
+2. Update release notes/changelog (`NEWS.md` and `NES.md`).
+3. Confirm docs are synchronized: `README.md`, `PROJECT_DESIGN.md`, quickstart and endpoint/corpus vignettes, man pages.
 4. Confirm no stale names, paths, or deprecated references remain.
 5. Run regression tests relevant to touched behavior.
 
@@ -76,3 +76,12 @@ Read `references/release-checklist.md` before finalizing.
 - Do not claim endpoint capabilities not present in code/tests.
 - Keep user-facing docs narrative, but keep this skill imperative and concise.
 - If behavior changes, update tests and docs in the same change set.
+- Before commit, explicitly verify and update when needed:
+  - `NEWS.md`
+  - `PROJECT_DESIGN.md`
+  - `README.md`
+  - `vignettes/*.qmd` relevant to changed behavior
+- Use detailed commit messages for maintainer changes. Minimum structure:
+  1. short imperative subject,
+  2. grouped bullets for behavioral changes,
+  3. grouped bullets for docs/tests/regenerated artifacts.
