@@ -1,6 +1,6 @@
 Package: kagiPro
 Title: Kagi API Client for R
-Version: 0.4.0
+Version: 0.4.1
 Description: User-friendly R client for the Kagi APIs (Search, Enrich, Summarizer,
     and FastGPT). Build endpoint-specific query objects, run single or batch
     requests with one reusable connection, and write reproducible JSON outputs

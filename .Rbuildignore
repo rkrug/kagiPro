@@ -19,3 +19,4 @@
 ^llms\.txt$
 ^llms-full\.txt$
 ^scripts$
+^skills$

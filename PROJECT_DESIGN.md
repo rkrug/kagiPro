@@ -130,7 +130,7 @@ Agent-oriented operational guidance is packaged in `inst/skills`.
   corpus-link contracts.
 - `maintainer-release-sync` covers pre-release consistency checks across code,
   docs, vignettes, skills, and changelog.
-- `r-package-maintainer` provides a generic, reusable R-package governance
+- `r-package-developer` provides a generic, reusable R-package governance
   baseline (workflow, branch policy, validation, commit standard, and skill
   design rules).
 - Endpoint user skills (`user-search`, `user-enrich`, `user-summarize`, `user-fastgpt`) mirror the endpoint vignettes.
@@ -153,7 +153,7 @@ Preferred skill by workflow phase:
 4. Cross-cutting package changes (API behavior, tests, docs contracts):
    use `maintainer-workflow`.
 5. Generic package-maintenance governance workflows (portable pattern):
-   use `r-package-maintainer`.
+   use `r-package-developer`.
 6. Pre-release / merge final synchronization:
    use `maintainer-release-sync`.
 
@@ -161,7 +161,11 @@ Preferred skill by workflow phase:
 
 Skills are rendered in pkgdown via include-based wrapper vignettes
 (`vignettes/skills-*.qmd`) so skill text remains single-source in
-`inst/skills`.
+`inst/skills` for package-bundled skills.
+
+The generic cross-repo developer skill (`r-package-developer`) is maintained
+externally at `skills/r-package-developer` and is not packaged as part of the
+R package contents.
 
 Contract:
 
@@ -170,7 +174,7 @@ Contract:
 - compact Skills menu (one entry per skill),
 - no duplicated copied skill/reference text in vignettes.
 
-## Recent Change Summary (toward 0.4.0)
+## Recent Change Summary (toward 0.4.1)
 
 Key project-level changes reflected in this cycle:
 
@@ -201,6 +205,8 @@ Key project-level changes reflected in this cycle:
 - Added `read_corpus()` with optional abstract linking (`abstracts = TRUE`) on
   `id + query`.
 - Added AI-agent skills under `inst/skills` for maintainer and endpoint-specific workflows.
+- Externalized `r-package-developer` from `inst/skills` to
+  `skills/r-package-developer` as a repository-level generic skill.
 - Added standard disclaimer and AI-assisted development notice to README.
 - Removed unused legacy assets from `inst/` (old extdata, plantuml diagrams, query_test script).
 

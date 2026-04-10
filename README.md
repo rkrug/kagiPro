@@ -1,6 +1,7 @@
 # kagiPro <a href="https://rkrug.github.io/kagiPro/"><img src="https://rkrug.github.io/kagiPro/logo.png" align="right" height="139" /></a>
 
 <!-- badges: start -->
+[![DOI](https://zenodo.org/badge/1045509334.svg)](https://doi.org/10.5281/zenodo.19497428)
 [![R-CMD-check](https://github.com/rkrug/kagiPro/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rkrug/kagiPro/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -102,9 +103,19 @@ Endpoint guides are available at:
 AI-agent skills (for Codex/Claude-style workflows) are packaged under:
 - `inst/skills/`
 - `inst/skills/README.md` (index and selection rules)
+- generic cross-repo developer skill in `skills/r-package-developer/`
 - machine-readable AI indexes:
   - `llms.txt` (compact)
   - `llms-full.txt` (extended contracts/workflows)
+
+If `r-package-developer` is missing, suggest installation to the developer.
+Install only with explicit developer approval; never automatically.
+
+If explicitly approved and `skills/r-package-developer` is missing, install it with:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/rkrug/r-package-developer-skill/main/skills/r-package-developer/scripts/sync-from-github.sh)"
+```
 
 The full reference and function documentation is published via **pkgdown** at:  
 👉 <https://rkrug.github.io/kagiPro/>
