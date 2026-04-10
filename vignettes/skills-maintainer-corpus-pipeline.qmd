@@ -1,0 +1,15 @@
+---
+title: "Skill: Maintainer Corpus Pipeline"
+---
+
+{{< include ../inst/skills/maintainer-corpus-pipeline/SKILL.md >}}
+
+## References
+
+### Contracts
+
+{{< include ../inst/skills/maintainer-corpus-pipeline/references/contracts.md >}}
+
+### Testing
+
+{{< include ../inst/skills/maintainer-corpus-pipeline/references/testing.md >}}

@@ -1,0 +1,23 @@
+---
+title: "Skill: Maintainer Workflow"
+---
+
+{{< include ../inst/skills/maintainer-workflow/SKILL.md >}}
+
+## References
+
+### Design Principles
+
+{{< include ../inst/skills/maintainer-workflow/references/design-principles.md >}}
+
+### Naming Principles
+
+{{< include ../inst/skills/maintainer-workflow/references/naming-principles.md >}}
+
+### Testing And Cassettes
+
+{{< include ../inst/skills/maintainer-workflow/references/testing-and-cassettes.md >}}
+
+### Release Checklist
+
+{{< include ../inst/skills/maintainer-workflow/references/release-checklist.md >}}

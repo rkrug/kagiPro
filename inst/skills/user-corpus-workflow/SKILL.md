@@ -1,6 +1,6 @@
 ---
 name: user-corpus-workflow
-description: Use this skill for the end-to-end corpus pipeline in kagiPro: search results to parquet, content download, markdown extraction, abstract generation, and corpus reading with optional abstract linking.
+description: "Use this skill for the end-to-end corpus pipeline in kagiPro: search results to parquet, content download, markdown extraction, abstract generation, and corpus reading with optional abstract linking."
 ---
 
 # User Corpus Workflow
@@ -16,6 +16,7 @@ Use this skill for corpus-building tasks aligned with `vignettes/corpus-workflow
 5. Run `content_markdown()`.
 6. Run `markdown_abstract()`.
 7. Read with `read_corpus(abstracts = TRUE)` when needed.
+
 
 ## Allowed Function Set
 
@@ -43,4 +44,8 @@ Use this skill for corpus-building tasks aligned with `vignettes/corpus-workflow
 - Use strict mode in CI-like runs; resilient mode for long batches.
 - Do not invent fallback extraction behavior beyond package implementation.
 
-Read `references/workflow.md` for canonical order and `references/examples.md` for copy-ready snippets.
+## References
+
+Read and apply:
+- `references/workflow.md`
+- `references/examples.md`

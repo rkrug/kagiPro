@@ -1,0 +1,11 @@
+---
+title: "Skill: Maintainer Release Sync"
+---
+
+{{< include ../inst/skills/maintainer-release-sync/SKILL.md >}}
+
+## References
+
+### Checklist
+
+{{< include ../inst/skills/maintainer-release-sync/references/checklist.md >}}

@@ -1,0 +1,31 @@
+# kagiPro AI Index
+
+kagiPro is an R package for Kagi API workflows with project-folder outputs and a modular corpus pipeline.
+
+## Canonical docs
+- README: ./README.md
+- Design: ./PROJECT_DESIGN.md
+- Changelog: ./NEWS.md
+- Skills index: ./inst/skills/README.md
+
+## Main workflows
+- High-level project workflow: `kagi_fetch()`
+- Low-level workflow: `kagi_request()` -> `kagi_request_parquet()`
+- Corpus enrichment: `download_content()` -> `content_markdown()` -> `markdown_abstract()`
+- Corpus read/link: `read_corpus(..., abstracts = TRUE)`
+- Query rerun/refresh: `kagi_update_query()`
+
+## Core function groups
+- Connection/auth: `kagi_connection()`
+- Query constructors: `query_search()`, `query_enrich_web()`, `query_enrich_news()`, `query_summarize()`, `query_fastgpt()`
+- Request execution: `kagi_request()`, `kagi_fetch()`
+- Storage/refresh: `kagi_request_parquet()`, `clean_request()`, `kagi_update_query()`
+- Content/abstract pipeline: `download_content()`, `content_markdown()`, `markdown_abstract()`, `summarize_with_openai()`, `summarize_with_kagi()`, `read_corpus()`
+
+## Contract highlights
+- Long-lived branches: `main`, `dev`
+- Do not delete `dev` after PR merges
+- `abstract` column is lowercase in abstract outputs
+- Abstract linking key is `id + query`
+
+For detailed API contracts and maintenance conventions, see `llms-full.txt`.

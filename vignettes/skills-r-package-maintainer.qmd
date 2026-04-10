@@ -1,0 +1,23 @@
+---
+title: "Skill: R Package Maintainer"
+---
+
+{{< include ../inst/skills/r-package-maintainer/SKILL.md >}}
+
+## References
+
+### Checklist
+
+{{< include ../inst/skills/r-package-maintainer/references/checklist.md >}}
+
+### Branch Protection Baseline
+
+{{< include ../inst/skills/r-package-maintainer/references/branch-protection-baseline.md >}}
+
+### Commit Template
+
+{{< include ../inst/skills/r-package-maintainer/references/commit-template.md >}}
+
+### Skill Design Standard
+
+{{< include ../inst/skills/r-package-maintainer/references/skill-design-standard.md >}}

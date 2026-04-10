@@ -31,8 +31,6 @@ For endpoint-only user workflows, use `user-search`, `user-enrich`, `user-summar
 5. Explicit fault tolerance.
    Keep `error_mode = "stop"` and `error_mode = "write_dummy"` coherent and tested.
 
-Read `references/design-principles.md` before modifying request behavior.
-
 ## Naming Principles
 
 Enforce these naming rules:
@@ -41,8 +39,6 @@ Enforce these naming rules:
 - Request executors are generic (`kagi_request`, `kagi_request_parquet`).
 - Constructor output contract remains consistent across endpoints.
 - Output folders should be explicit and stable in examples/tests.
-
-Read `references/naming-principles.md` before adding or renaming symbols.
 
 ## Testing Workflow
 
@@ -56,8 +52,6 @@ Required checks for relevant changes:
 4. Cover both strict and graceful error modes where request behavior changed.
 5. Validate parquet conversion for mixed success/error payloads when relevant.
 
-Read `references/testing-and-cassettes.md` before updating fixtures.
-
 ## Release Hygiene Checklist
 
 For release-prep changes, execute this checklist:
@@ -67,8 +61,6 @@ For release-prep changes, execute this checklist:
 3. Confirm docs are synchronized: `README.md`, `PROJECT_DESIGN.md`, quickstart and endpoint/corpus vignettes, man pages.
 4. Confirm no stale names, paths, or deprecated references remain.
 5. Run regression tests relevant to touched behavior.
-
-Read `references/release-checklist.md` before finalizing.
 
 ## Implementation Guardrails
 
@@ -90,3 +82,11 @@ Read `references/release-checklist.md` before finalizing.
   1. short imperative subject,
   2. grouped bullets for behavioral changes,
   3. grouped bullets for docs/tests/regenerated artifacts.
+
+## References
+
+Read and apply:
+- `references/design-principles.md`
+- `references/naming-principles.md`
+- `references/testing-and-cassettes.md`
+- `references/release-checklist.md`

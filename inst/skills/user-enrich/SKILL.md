@@ -14,6 +14,7 @@ Use this skill for Enrich tasks aligned with `vignettes/enrich-endpoint.qmd`.
 3. Prefer `kagi_fetch()` for project-folder workflows.
 4. Use `kagi_request()` + `kagi_request_parquet()` for low-level control.
 
+
 ## Allowed Function Set
 
 - `kagi_connection()`
@@ -34,4 +35,8 @@ Use this skill for Enrich tasks aligned with `vignettes/enrich-endpoint.qmd`.
 - Keep web and news workflows separated when presenting output layout.
 - Use batch enrich examples for thematic monitoring.
 
-Read `references/workflow.md` and `references/examples.md`.
+## References
+
+Read and apply:
+- `references/workflow.md`
+- `references/examples.md`
