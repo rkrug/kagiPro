@@ -48,8 +48,8 @@
 2. Run package checks appropriate to change risk.
 3. Ensure baseline CI check workflow is present:
    - initialize/refresh with `usethis::use_github_action("check-standard")`.
-4. Run a local package check and record outcome
-   (for example `R CMD check --no-manual .` or `devtools::check()`).
+4. Run a local package check with `devtools::check()` and record outcome.
+   Use `R CMD check` only when explicitly needed for tarball-level parity.
 5. Confirm no stale references to removed/renamed APIs in docs/tests.
 6. Confirm touched R files conform to `air` formatting rules.
 7. Pre-commit AI gate:

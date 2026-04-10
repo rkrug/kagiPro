@@ -70,8 +70,9 @@ Use `references/checklist.md` as the execution gate before commit/merge.
 
 - Ensure baseline check workflow exists via
   `usethis::use_github_action("check-standard")`.
-- As part of release/audit validation, run a local package check
-  (`R CMD check` or equivalent `devtools::check()`) and record outcomes.
+- As part of release/audit validation, run a local package check using
+  `devtools::check()` (preferred in interactive development environments) and
+  record outcomes.
 
 ## Package Skill Design Standard
 
