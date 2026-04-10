@@ -16,6 +16,7 @@ Use this skill for Search endpoint tasks aligned with `vignettes/search-endpoint
 
 Do not skip steps in guidance unless the user already provides a reusable connection.
 
+
 ## Allowed Function Set
 
 - `kagi_connection()`
@@ -37,4 +38,8 @@ Do not skip steps in guidance unless the user already provides a reusable connec
 - Use list-style query execution for batch workloads.
 - Mention `workers` when describing parallel execution.
 
-Read `references/workflow.md` for canonical flow and `references/examples.md` for endpoint-aligned snippets.
+## References
+
+Read and apply:
+- `references/workflow.md`
+- `references/examples.md`

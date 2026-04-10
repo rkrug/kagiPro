@@ -1,0 +1,15 @@
+---
+title: "Skill: User Enrich"
+---
+
+{{< include ../inst/skills/user-enrich/SKILL.md >}}
+
+## References
+
+### Workflow
+
+{{< include ../inst/skills/user-enrich/references/workflow.md >}}
+
+### Examples
+
+{{< include ../inst/skills/user-enrich/references/examples.md >}}

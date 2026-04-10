@@ -2,12 +2,54 @@ url: https://rkrug.github.io/kagiPro/
 destination: _site
 template:
   bootstrap: 5
+navbar:
+  right:
+    - text: Skills
+      menu:
+        - text: Skills Index
+          href: articles/skills-index.html
+        - text: Maintainer Workflow
+          href: articles/skills-maintainer-workflow.html
+        - text: Maintainer Release Sync
+          href: articles/skills-maintainer-release-sync.html
+        - text: Maintainer Corpus Pipeline
+          href: articles/skills-maintainer-corpus-pipeline.html
+        - text: R Package Maintainer
+          href: articles/skills-r-package-maintainer.html
+        - text: User Search
+          href: articles/skills-user-search.html
+        - text: User Enrich
+          href: articles/skills-user-enrich.html
+        - text: User Summarize
+          href: articles/skills-user-summarize.html
+        - text: User FastGPT
+          href: articles/skills-user-fastgpt.html
+        - text: User Corpus Workflow
+          href: articles/skills-user-corpus-workflow.html
+    - text: AI Index
+      href: llms.txt
+    - text: AI Full
+      href: llms-full.txt
 articles:
   - title: Guides
     contents:
       - quickstart
+      - agent-quick-index
+      - api-contracts
       - corpus-workflow
       - search-endpoint
       - enrich-endpoint
       - summarize-endpoint
       - fastgpt-endpoint
+  - title: Skills
+    contents:
+      - skills-index
+      - skills-maintainer-workflow
+      - skills-maintainer-release-sync
+      - skills-maintainer-corpus-pipeline
+      - skills-r-package-maintainer
+      - skills-user-search
+      - skills-user-enrich
+      - skills-user-summarize
+      - skills-user-fastgpt
+      - skills-user-corpus-workflow

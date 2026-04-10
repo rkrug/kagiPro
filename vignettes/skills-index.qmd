@@ -1,0 +1,5 @@
+---
+title: "Skills Index"
+---
+
+{{< include ../inst/skills/README.md >}}

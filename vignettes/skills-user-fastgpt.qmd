@@ -1,0 +1,15 @@
+---
+title: "Skill: User Fastgpt"
+---
+
+{{< include ../inst/skills/user-fastgpt/SKILL.md >}}
+
+## References
+
+### Workflow
+
+{{< include ../inst/skills/user-fastgpt/references/workflow.md >}}
+
+### Examples
+
+{{< include ../inst/skills/user-fastgpt/references/examples.md >}}

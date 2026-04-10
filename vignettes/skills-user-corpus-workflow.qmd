@@ -1,0 +1,15 @@
+---
+title: "Skill: User Corpus Workflow"
+---
+
+{{< include ../inst/skills/user-corpus-workflow/SKILL.md >}}
+
+## References
+
+### Workflow
+
+{{< include ../inst/skills/user-corpus-workflow/references/workflow.md >}}
+
+### Examples
+
+{{< include ../inst/skills/user-corpus-workflow/references/examples.md >}}

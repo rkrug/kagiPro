@@ -1,0 +1,75 @@
+# kagiPro AI Full Index
+
+This file provides machine-oriented repo guidance while keeping user docs narrative-first.
+
+## 1) Package purpose
+kagiPro provides R-native access to Kagi APIs with reproducible JSON output, parquet conversion, and optional corpus enrichment.
+
+## 2) Public API map
+
+### Connection
+- `kagi_connection(api_key, base_url)`
+
+### Query constructors
+- `query_search(...)`
+- `query_enrich_web(...)`
+- `query_enrich_news(...)`
+- `query_summarize(...)`
+- `query_fastgpt(...)`
+
+### Execution
+- `kagi_request(connection, query, ...)` low-level request executor
+- `kagi_fetch(connection, query, project_folder, ...)` high-level project-folder orchestrator
+
+### Conversion/storage
+- `kagi_request_parquet(input_json, output, ...)` JSON->parquet conversion
+- `clean_request(project_folder, ...)` remove JSON payloads while preserving metadata
+- `kagi_update_query(connection, project_folder, query_name, ...)` rerun query by name and refresh touched partitions
+
+### Corpus pipeline
+- `download_content(project_folder, endpoint = NULL, query_name = NULL, ...)`
+- `content_markdown(project_folder, endpoint = NULL, query_name = NULL, ...)`
+- `markdown_abstract(project_folder, endpoint = NULL, query_name = NULL, summarizer_fn, ...)`
+- `summarize_with_openai(text, ...)`
+- `summarize_with_kagi(text, ...)`
+- `read_corpus(project_folder, endpoint, corpus = "parquet", abstracts = FALSE, ...)`
+
+## 3) Folder contracts
+
+### Request/parquet (project workflow)
+- `<project>/<endpoint>/json`
+- `<project>/<endpoint>/parquet`
+
+### Corpus enrichment
+- `<project>/<endpoint>/content/query=<query>`
+- `<project>/<endpoint>/markdown/query=<query>`
+- `<project>/<endpoint>/abstract/query=<query>`
+
+## 4) Data contracts
+- Query partition column: `query`
+- Record identifier: `id`
+- Abstract field: `abstract` (lowercase)
+- Abstract linking in `read_corpus(..., abstracts = TRUE)`: by `id + query`
+
+## 5) Error/robustness model
+- `kagi_request(..., error_mode = "stop")`: fail-fast
+- `kagi_request(..., error_mode = "write_dummy")`: continue with endpoint-compatible dummy payloads + warnings
+
+## 6) Maintainer rules (repo)
+- Long-lived branches: `main`, `dev`
+- Do not delete `dev` after PR merges
+- No branch deletion unless explicitly requested and explicitly confirmed
+- Keep docs/tests/contracts synchronized with behavior changes in same change set
+- Use detailed commit messages with behavior/docs/validation sections
+
+## 7) Human docs and guides
+- README: `README.md`
+- Design context: `PROJECT_DESIGN.md`
+- Skills: `inst/skills/README.md`
+- Guides:
+  - `vignettes/quickstart.qmd`
+  - `vignettes/corpus-workflow.qmd`
+  - `vignettes/search-endpoint.qmd`
+  - `vignettes/enrich-endpoint.qmd`
+  - `vignettes/summarize-endpoint.qmd`
+  - `vignettes/fastgpt-endpoint.qmd`

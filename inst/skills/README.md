@@ -11,6 +11,8 @@ Preferred high-level project workflow: `kagi_fetch()`.
   Use when changing `download_content()`, `content_markdown()`, `markdown_abstract()`, summarizer providers, or abstract-link contracts.
 - `maintainer-release-sync`
   Use before release/merge to synchronize versioning, changelog, docs, vignettes, and skills.
+- `r-package-maintainer`
+  Generic R-package maintainer baseline skill (portable across repos) for workflow, validation, branch governance, and commit standards.
 - `user-search`
   Use for Search endpoint workflows aligned with `vignettes/search-endpoint.qmd`.
 - `user-enrich`
@@ -28,7 +30,8 @@ Preferred high-level project workflow: `kagi_fetch()`.
 2. If the task changes package internals, tests, release docs, or conventions, use `maintainer-workflow`.
 3. If the task changes corpus pipeline internals, use `maintainer-corpus-pipeline` (and `maintainer-workflow` when broader API/docs are affected).
 4. If the task is release-finalization, use `maintainer-release-sync`.
-5. If a task spans endpoint usage and package changes, load the relevant maintainer skill plus the matching `user-*` skill.
+5. If the task is generic/package-governance work (not package-specific internals), use `r-package-maintainer`.
+6. If a task spans endpoint usage and package changes, load the relevant maintainer skill plus the matching `user-*` skill.
 
 ## Non-goal
 

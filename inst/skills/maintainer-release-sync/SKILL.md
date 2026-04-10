@@ -38,4 +38,24 @@ Use this skill for final consistency checks before release or merge.
    - documentation and skills updates,
    - test/check validation outcomes.
 
-Read `references/checklist.md` before final release actions.
+## GitHub Protection Baseline
+
+Before release-final merge, confirm repository rulesets are aligned:
+
+- `main` ruleset:
+  - `deletion` enabled,
+  - `non_fast_forward` enabled,
+  - PR review required (`required_approving_review_count = 1`),
+  - review thread resolution required,
+  - stale review dismissal on push enabled,
+  - last-push approval required,
+  - if solo-maintainer bypass is configured, it is PR-merge-only and does not allow direct pushes,
+  - no `required_deployments` gate for `github-pages`.
+- `dev` ruleset:
+  - protect from deletion,
+  - no force-push prevention (`non_fast_forward` not enforced).
+
+## References
+
+Read and apply:
+- `references/checklist.md`

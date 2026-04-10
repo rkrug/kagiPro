@@ -1,0 +1,71 @@
+---
+title: "Agent Quick Index"
+author: "Rainer Krug"
+format: html
+vignette: >
+  %\VignetteIndexEntry{Agent Quick Index}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+execute:
+  echo: true
+  warning: false
+  message: false
+  eval: false
+---
+
+This page is a machine-friendly, human-readable quick selector for exported
+functions.
+
+## Connection and Authentication
+
+- `kagi_connection()`
+  Build a reusable authenticated connection.
+
+## Query Construction
+
+- `query_search()`
+  Build Search endpoint requests.
+- `query_enrich_web()`
+  Build Enrich Web endpoint requests.
+- `query_enrich_news()`
+  Build Enrich News endpoint requests.
+- `query_summarize()`
+  Build Summarize endpoint requests.
+- `query_fastgpt()`
+  Build FastGPT endpoint requests.
+
+## Request Execution
+
+- `kagi_request()`
+  Low-level request execution into JSON output folders.
+- `kagi_fetch()`
+  High-level project workflow executor writing endpoint-scoped JSON/parquet.
+
+## Storage and Refresh
+
+- `kagi_request_parquet()`
+  Convert request JSON folders to parquet.
+- `kagi_update_query()`
+  Re-run one stored query by name and refresh touched parquet partitions.
+- `clean_request()`
+  Remove JSON payload artifacts while preserving query metadata.
+
+## Content and Abstract Pipeline
+
+- `download_content()`
+  Download source content for endpoint/query partitions.
+- `content_markdown()`
+  Convert downloaded files to markdown.
+- `markdown_abstract()`
+  Summarize markdown and write abstract parquet outputs.
+- `summarize_with_openai()`
+  OpenAI text summarization provider.
+- `summarize_with_kagi()`
+  Kagi text summarization provider.
+- `read_corpus()`
+  Read parquet corpus and optionally link abstract data.
+
+## Utility
+
+- `open_search_query()`
+  Open rendered search query in browser for inspection.

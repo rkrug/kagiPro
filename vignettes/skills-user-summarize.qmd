@@ -1,0 +1,15 @@
+---
+title: "Skill: User Summarize"
+---
+
+{{< include ../inst/skills/user-summarize/SKILL.md >}}
+
+## References
+
+### Workflow
+
+{{< include ../inst/skills/user-summarize/references/workflow.md >}}
+
+### Examples
+
+{{< include ../inst/skills/user-summarize/references/examples.md >}}

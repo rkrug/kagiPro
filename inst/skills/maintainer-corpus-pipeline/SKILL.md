@@ -26,11 +26,13 @@ Apply when changing any of:
 4. Keep row-level status/error reporting for partial failures.
 5. Keep provider functions pluggable via function argument.
 
+
 ## Retry and Concurrency Rules
 
 - OpenAI provider should default to conservative request concurrency.
 - Retry behavior must remain explicit and documented.
 - Progress output should reflect file-level work, not only worker completion.
+
 
 ## Documentation Sync Rules
 
@@ -41,4 +43,8 @@ When behavior changes, update together:
 - `PROJECT_DESIGN.md`
 - this skill’s references
 
-Read `references/contracts.md` and `references/testing.md` before implementation changes.
+## References
+
+Read and apply:
+- `references/contracts.md`
+- `references/testing.md`

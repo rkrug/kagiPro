@@ -14,6 +14,7 @@ Use this skill for Summarize tasks aligned with `vignettes/summarize-endpoint.qm
 3. Prefer `kagi_fetch()` for project-folder workflows.
 4. Use `kagi_request()` + `kagi_request_parquet()` for low-level control.
 
+
 ## Allowed Function Set
 
 - `kagi_connection()`
@@ -29,4 +30,8 @@ Use this skill for Summarize tasks aligned with `vignettes/summarize-endpoint.qm
 - For robust pipelines, recommend `error_mode = "write_dummy"`.
 - Keep mixed success/error batch guidance aligned with existing vignette behavior.
 
-Read `references/workflow.md` and `references/examples.md`.
+## References
+
+Read and apply:
+- `references/workflow.md`
+- `references/examples.md`

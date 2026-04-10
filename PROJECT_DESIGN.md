@@ -130,6 +130,9 @@ Agent-oriented operational guidance is packaged in `inst/skills`.
   corpus-link contracts.
 - `maintainer-release-sync` covers pre-release consistency checks across code,
   docs, vignettes, skills, and changelog.
+- `r-package-maintainer` provides a generic, reusable R-package governance
+  baseline (workflow, branch policy, validation, commit standard, and skill
+  design rules).
 - Endpoint user skills (`user-search`, `user-enrich`, `user-summarize`, `user-fastgpt`) mirror the endpoint vignettes.
 - `user-corpus-workflow` mirrors the end-to-end corpus vignette
   (`vignettes/corpus-workflow.qmd`).
@@ -149,8 +152,23 @@ Preferred skill by workflow phase:
    use `maintainer-corpus-pipeline`.
 4. Cross-cutting package changes (API behavior, tests, docs contracts):
    use `maintainer-workflow`.
-5. Pre-release / merge final synchronization:
+5. Generic package-maintenance governance workflows (portable pattern):
+   use `r-package-maintainer`.
+6. Pre-release / merge final synchronization:
    use `maintainer-release-sync`.
+
+## Skills in pkgdown
+
+Skills are rendered in pkgdown via include-based wrapper vignettes
+(`vignettes/skills-*.qmd`) so skill text remains single-source in
+`inst/skills`.
+
+Contract:
+
+- one wrapper page per skill,
+- references embedded within the same skill page,
+- compact Skills menu (one entry per skill),
+- no duplicated copied skill/reference text in vignettes.
 
 ## Recent Change Summary (toward 0.4.0)
 

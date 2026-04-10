@@ -1,0 +1,77 @@
+---
+title: "API Contracts"
+author: "Rainer Krug"
+format: html
+vignette: >
+  %\VignetteIndexEntry{API Contracts}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+execute:
+  echo: true
+  warning: false
+  message: false
+  eval: false
+---
+
+This article defines stable contracts for package workflows and machine-readable
+integrations.
+
+## Folder Contracts
+
+### Request/Parquet Workflow
+
+- `<project>/<endpoint>/json`
+- `<project>/<endpoint>/parquet`
+
+### Content/Abstract Workflow
+
+- `<project>/<endpoint>/content/query=<query>`
+- `<project>/<endpoint>/markdown/query=<query>`
+- `<project>/<endpoint>/abstract/query=<query>`
+
+## Data Contracts
+
+### Base Parquet Corpus
+
+| Column | Type | Required | Notes |
+|---|---|---|---|
+| `id` | character | yes | Stable record key in endpoint output |
+| `query` | character | yes | Query partition key |
+| `Title` | character/nullable | endpoint-dependent | Present where source includes title |
+| endpoint payload columns | mixed | endpoint-dependent | Schema depends on endpoint |
+
+### Abstract Parquet
+
+| Column | Type | Required | Notes |
+|---|---|---|---|
+| `id` | character | yes | Join key |
+| `query` | character | yes | Join key |
+| `abstract` | character/nullable | yes | Lowercase column name |
+| `status` | character | yes | Summarization status |
+| `error` | character/nullable | no | Row-level error message |
+
+### `read_corpus(..., abstracts = TRUE)`
+
+Contract:
+
+- Performs left join from base corpus to abstract parquet by `id + query`.
+- If abstract data is missing, `abstract` is returned as `NA`.
+
+## Execution Contracts
+
+- `kagi_fetch()` is the preferred high-level project workflow.
+- `kagi_request()` + `kagi_request_parquet()` is the low-level path.
+- `kagi_request_parquet()` performs JSON-to-parquet conversion only.
+
+## Error-Handling Contracts
+
+- `kagi_request(..., error_mode = "stop")`
+  Fail-fast mode.
+- `kagi_request(..., error_mode = "write_dummy")`
+  Continue mode with endpoint-compatible dummy payloads and warnings.
+
+## Stability Notes
+
+- Constructor naming `query_<endpoint>` is stable in the current API generation.
+- `id + query` join key and lowercase `abstract` are required integration
+  invariants for corpus linking.

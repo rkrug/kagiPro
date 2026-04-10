@@ -71,8 +71,24 @@
 - Updated pkgdown article structure for clearer endpoint-based navigation.
 - Added project-level design/context documentation for maintainers and AI coding agents (`PROJECT_DESIGN.md`).
 - Added README disclaimer and AI-assisted development notice.
+- Added AI-readable artifact index files (`llms.txt`, `llms-full.txt`) and
+  mirrored pkgdown extras.
+- Added AI-focused vignettes:
+  - `agent-quick-index`
+  - `api-contracts`
+- Added rendered Skills pages in pkgdown using include-based wrappers
+  (`vignettes/skills-*.qmd`) with one page per skill and embedded references.
 
 ## Maintenance
 
 - Added CI workflow for package checks on pull requests to `main` and pushes to `dev`.
 - Removed unused legacy package assets from `inst/` (`extdata`, `plantuml`, `query_test.R`).
+- Added AI-doc consistency check script (`scripts/check-ai-docs.sh`) and wired
+  it into CI (`R-CMD-check`).
+- Added generic reusable maintainer skill `r-package-maintainer` with:
+  - branch protection baseline,
+  - release/validation checklist,
+  - commit template,
+  - skill design standard.
+- Standardized all skill files to a unified structure with a dedicated
+  `## References` section.
