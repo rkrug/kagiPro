@@ -33,3 +33,9 @@ Preferred high-level project workflow: `kagi_fetch()`.
 ## Non-goal
 
 These skills do not replace package docs. They encode actionable workflows and guardrails for coding agents.
+
+## Branch Policy (Maintainer)
+
+- Long-lived branches are `main` and `dev`.
+- `dev` must remain on origin after pull request merges.
+- No branch deletion unless explicitly requested and explicitly confirmed by the user.

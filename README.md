@@ -1,5 +1,9 @@
 # kagiPro <a href="https://rkrug.github.io/kagiPro/"><img src="https://rkrug.github.io/kagiPro/logo.png" align="right" height="139" /></a>
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/rkrug/kagiPro/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rkrug/kagiPro/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 > R client for the [Kagi API](https://help.kagi.com/kagi/api/).
 
 ---

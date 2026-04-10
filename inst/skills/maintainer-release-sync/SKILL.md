@@ -19,17 +19,21 @@ Use this skill for final consistency checks before release or merge.
 
 ## Required Checks
 
-1. No stale function names or removed APIs in docs/skills.
-2. Examples use current constructor names and workflow order.
-3. Breaking changes are explicitly listed in changelog.
-4. Skills align 1:1 with vignette terminology for user workflows.
-5. Release docs reflect current folder contracts and schema contracts.
-6. Before commit/merge, confirm the following are reviewed and updated if needed:
+1. Enforce branch policy:
+   - long-lived branches are `main` and `dev`;
+   - `dev` must not be deleted after PR merge.
+   - do not delete any branch unless deletion is explicitly requested and explicitly confirmed by the user.
+2. No stale function names or removed APIs in docs/skills.
+3. Examples use current constructor names and workflow order.
+4. Breaking changes are explicitly listed in changelog.
+5. Skills align 1:1 with vignette terminology for user workflows.
+6. Release docs reflect current folder contracts and schema contracts.
+7. Before commit/merge, confirm the following are reviewed and updated if needed:
    - `NEWS.md`
    - `PROJECT_DESIGN.md`
    - `README.md`
    - `vignettes/*.qmd`
-7. Use a detailed commit message that includes:
+8. Use a detailed commit message that includes:
    - summary of behavioral changes,
    - documentation and skills updates,
    - test/check validation outcomes.

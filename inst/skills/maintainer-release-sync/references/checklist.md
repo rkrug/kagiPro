@@ -11,3 +11,6 @@
    - verify `NEWS.md`, `PROJECT_DESIGN.md`, `README.md`, and relevant `vignettes/*.qmd` are updated for behavior changes.
 9. Commit message gate:
    - use a detailed message with sections for behavior changes, docs/skills sync, and test/check outcomes.
+10. Branch gate:
+   - keep both `main` and `dev` on origin; do not delete `dev` after merge.
+   - do not delete any branch unless explicitly requested and explicitly confirmed by the user.

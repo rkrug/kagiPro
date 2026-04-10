@@ -72,6 +72,11 @@ Read `references/release-checklist.md` before finalizing.
 
 ## Implementation Guardrails
 
+- Branch policy:
+  - Maintain exactly two long-lived branches: `main` and `dev`.
+  - All feature/release integration flows through pull requests into `main`.
+  - `dev` must never be deleted after pull request merge.
+  - Do not delete any branch unless the user explicitly asks for deletion and explicitly confirms it.
 - Do not introduce undocumented behavior in skills or docs.
 - Do not claim endpoint capabilities not present in code/tests.
 - Keep user-facing docs narrative, but keep this skill imperative and concise.

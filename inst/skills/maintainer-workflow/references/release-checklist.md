@@ -27,4 +27,6 @@
 - No contradictory behavior across code, tests, and docs.
 - No unreviewed placeholder text in new docs.
 - All new skills/reference files are discoverable from `inst/skills/README.md`.
-
+- Branch policy is respected:
+  - keep `main` and `dev` as long-lived branches,
+  - never delete `dev` after PR merge.
