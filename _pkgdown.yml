@@ -14,8 +14,8 @@ navbar:
           href: articles/skills-maintainer-release-sync.html
         - text: Maintainer Corpus Pipeline
           href: articles/skills-maintainer-corpus-pipeline.html
-        - text: R Package Maintainer
-          href: articles/skills-r-package-maintainer.html
+        - text: R Package Developer
+          href: articles/skills-r-package-developer.html
         - text: User Search
           href: articles/skills-user-search.html
         - text: User Enrich
@@ -47,7 +47,7 @@ articles:
       - skills-maintainer-workflow
       - skills-maintainer-release-sync
       - skills-maintainer-corpus-pipeline
-      - skills-r-package-maintainer
+      - skills-r-package-developer
       - skills-user-search
       - skills-user-enrich
       - skills-user-summarize

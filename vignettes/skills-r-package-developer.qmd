@@ -1,0 +1,23 @@
+---
+title: "Skill: R Package Developer"
+---
+
+{{< include ../inst/skills/r-package-developer/SKILL.md >}}
+
+## References
+
+### Checklist
+
+{{< include ../inst/skills/r-package-developer/references/checklist.md >}}
+
+### Branch Protection Baseline
+
+{{< include ../inst/skills/r-package-developer/references/branch-protection-baseline.md >}}
+
+### Commit Template
+
+{{< include ../inst/skills/r-package-developer/references/commit-template.md >}}
+
+### Skill Design Standard
+
+{{< include ../inst/skills/r-package-developer/references/skill-design-standard.md >}}

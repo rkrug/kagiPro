@@ -85,7 +85,7 @@
 - Removed unused legacy package assets from `inst/` (`extdata`, `plantuml`, `query_test.R`).
 - Added AI-doc consistency check script (`scripts/check-ai-docs.sh`) and wired
   it into CI (`R-CMD-check`).
-- Added generic reusable maintainer skill `r-package-maintainer` with:
+- Added generic reusable maintainer skill `r-package-developer` with:
   - branch protection baseline,
   - release/validation checklist,
   - commit template,

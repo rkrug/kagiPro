@@ -1,4 +1,4 @@
-# Generic R Package Maintainer Checklist
+# Generic R Package Developer Checklist
 
 ## Pre-Implementation
 

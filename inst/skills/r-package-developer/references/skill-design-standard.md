@@ -22,8 +22,7 @@ use them consistently without bloating user-facing docs.
 ## Linking Rules
 
 1. Include a final `References` section in `SKILL.md`.
-2. Add section-level pointers ("See also") where a specific reference is
-   required.
+2. Keep references centralized under `## References` for consistency.
 3. Ensure every referenced file exists and is current.
 4. In `_pkgdown.yml`, keep skill pages indexed and linked via wrapper vignette
    HTML pages.
@@ -57,6 +56,8 @@ When code/API/workflow changes:
    skill wrappers.
 7. If wrapper pages are pkgdown-only, exclude them in `.Rbuildignore` to avoid
    vignette-engine notes during package checks.
+8. Keep skill updates manual and reviewable in the repository; do not depend on
+   automatic self-update mechanisms.
 
 ## Readability Guardrails
 

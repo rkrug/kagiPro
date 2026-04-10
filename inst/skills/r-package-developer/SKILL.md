@@ -1,9 +1,9 @@
 ---
-name: r-package-maintainer
-description: Generic R package maintainer skill for implementation quality, testing, docs sync, release hygiene, branch governance, and merge safety.
+name: r-package-developer
+description: Generic R package developer skill for implementation quality, testing, docs sync, release hygiene, branch governance, and merge safety.
 ---
 
-# R Package Maintainer Workflow (Generic)
+# R Package Developer Workflow (Generic)
 
 Use this skill for package maintenance and release work in any R package repository.
 
@@ -83,6 +83,8 @@ Use `references/checklist.md` as the execution gate before commit/merge.
 - Maintain clear user-skill vs maintainer-skill boundaries.
 - When package APIs/workflows change, update impacted skills in the same change
   set and run stale-reference checks before commit.
+- Keep skill updates manual and explicit (reviewed edits in-repo); do not
+  require automatic self-update behavior.
 
 ## Commit Standard
 

@@ -130,7 +130,7 @@ Agent-oriented operational guidance is packaged in `inst/skills`.
   corpus-link contracts.
 - `maintainer-release-sync` covers pre-release consistency checks across code,
   docs, vignettes, skills, and changelog.
-- `r-package-maintainer` provides a generic, reusable R-package governance
+- `r-package-developer` provides a generic, reusable R-package governance
   baseline (workflow, branch policy, validation, commit standard, and skill
   design rules).
 - Endpoint user skills (`user-search`, `user-enrich`, `user-summarize`, `user-fastgpt`) mirror the endpoint vignettes.
@@ -153,7 +153,7 @@ Preferred skill by workflow phase:
 4. Cross-cutting package changes (API behavior, tests, docs contracts):
    use `maintainer-workflow`.
 5. Generic package-maintenance governance workflows (portable pattern):
-   use `r-package-maintainer`.
+   use `r-package-developer`.
 6. Pre-release / merge final synchronization:
    use `maintainer-release-sync`.
 

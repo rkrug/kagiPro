@@ -1,6 +1,7 @@
 # kagiPro <a href="https://rkrug.github.io/kagiPro/"><img src="https://rkrug.github.io/kagiPro/logo.png" align="right" height="139" /></a>
 
 <!-- badges: start -->
+[![DOI](https://zenodo.org/badge/1045509334.svg)](https://doi.org/10.5281/zenodo.19497428)
 [![R-CMD-check](https://github.com/rkrug/kagiPro/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rkrug/kagiPro/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
