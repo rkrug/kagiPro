@@ -5,8 +5,8 @@
 #' written as a single parquet file per query under `abstract/`.
 #'
 #' @param project_folder Root project folder containing endpoint subfolders.
-#' @param endpoint Optional endpoint selector (for example `"search"` or
-#'   `"enrich_news"`). If `NULL`, all supported endpoints are considered.
+#' @param endpoint Optional endpoint selector (currently only `"search"`).
+#'   If `NULL`, all supported endpoints are considered.
 #' @param query_name Optional query selector. If `NULL`, all query partitions
 #'   are considered.
 #' @param workers Number of parallel workers to use for summarization.
@@ -15,8 +15,9 @@
 #' @param summarizer_fn Function with signature
 #'   `fn(text, model, ...) -> character(1) | NA_character_`.
 #' @param model Provider-specific model/engine.
-#' @param connection Optional [kagi_connection()] object. Used for
-#'   [summarize_with_kagi()] when not supplied via `provider_args`.
+#' @param connection Optional [kagi_connection()] object. Currently unused
+#'   but retained for forward compatibility with future Kagi-side
+#'   summarization endpoints.
 #' @param provider_args Optional named list forwarded to `summarizer_fn`.
 #' @param markdown_root Root folder name containing markdown files.
 #' @param abstract_root Root folder name for abstract parquet outputs.
@@ -142,10 +143,6 @@ markdown_abstract <- function(
   text_index <- do.call(rbind, Filter(Negate(is.null), text_index))
   if (is.null(text_index) || nrow(text_index) == 0L) {
     return(invisible(empty_result()))
-  }
-
-  if (identical(summarizer_fn, summarize_with_kagi) && is.null(provider_args$connection)) {
-    provider_args$connection <- connection
   }
 
   summarize_rows <- summarize_text_records(
@@ -274,62 +271,3 @@ summarize_with_openai <- function(
   if (!nzchar(trimws(out))) NA_character_ else out
 }
 
-#' Summarize Text via Kagi Summarize Endpoint
-#'
-#' @param text Plain text to summarize.
-#' @param model Kagi summarize engine (`"cecil"`, `"agnes"`, `"muriel"`,
-#'   `"daphne"`).
-#' @param connection Optional [kagi_connection()] object.
-#' @param api_key Optional Kagi API key override.
-#' @param base_url Optional Kagi API base URL override.
-#' @param summary_type Summarize mode (`"summary"` or `"takeaway"`).
-#' @param target_language Target language code.
-#' @param cache Cache flag forwarded to Kagi summarize endpoint.
-#' @param retry_max_tries Maximum number of HTTP retry attempts passed to
-#'   [httr2::req_retry()].
-#'
-#' @return A single summary string (or `NA_character_`).
-#' @export
-summarize_with_kagi <- function(
-  text,
-  model = "cecil",
-  connection = NULL,
-  api_key = NULL,
-  base_url = NULL,
-  summary_type = "summary",
-  target_language = "EN",
-  cache = TRUE,
-  retry_max_tries = 5
-) {
-  if (is.null(text) || !nzchar(trimws(as.character(text)))) {
-    return(NA_character_)
-  }
-
-  if (!is.null(connection) && !inherits(connection, "kagi_connection")) {
-    stop("`connection` must be NULL or of class `kagi_connection`.", call. = FALSE)
-  }
-
-  if (is.null(base_url)) {
-    base_url <- if (!is.null(connection)) connection$base_url else "https://kagi.com/api/v0"
-  }
-  key <- if (!is.null(connection)) connection$api_key else api_key
-  key <- resolve_api_key(key)
-
-  req <- httr2::request(base_url) |>
-    httr2::req_url_path_append("summarize") |>
-    httr2::req_headers(Authorization = paste0("Bot ", key)) |>
-    httr2::req_url_query(
-      text = as.character(text),
-      engine = model,
-      summary_type = summary_type,
-      target_language = target_language,
-      cache = if (isTRUE(cache)) "true" else "false"
-    ) |>
-    httr2::req_retry(max_tries = retry_max_tries)
-
-  resp <- httr2::req_perform(req)
-  payload <- httr2::resp_body_json(resp, simplifyVector = FALSE)
-  out <- payload$data$output %||% NA_character_
-  out <- as.character(out)[[1]]
-  if (!nzchar(trimws(out))) NA_character_ else out
-}

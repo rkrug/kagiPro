@@ -19,20 +19,15 @@ functions.
 ## Connection and Authentication
 
 - `kagi_connection()`
-  Build a reusable authenticated connection.
+  Build a reusable authenticated connection (Kagi `v1` API; `Bearer` auth).
 
 ## Query Construction
 
-- `query_search()`
-  Build Search endpoint requests.
-- `query_enrich_web()`
-  Build Enrich Web endpoint requests.
-- `query_enrich_news()`
-  Build Enrich News endpoint requests.
-- `query_summarize()`
-  Build Summarize endpoint requests.
-- `query_fastgpt()`
-  Build FastGPT endpoint requests.
+- `kagi_query_search()`
+  Build Search endpoint requests (workflows: `search`, `images`, `videos`,
+  `news`, `podcasts`).
+- `kagi_query_extract()`
+  Build Extract endpoint requests (URL → markdown).
 
 ## Request Execution
 
@@ -60,10 +55,10 @@ functions.
   Summarize markdown and write abstract parquet outputs.
 - `summarize_with_openai()`
   OpenAI text summarization provider.
-- `summarize_with_kagi()`
-  Kagi text summarization provider.
 - `read_corpus()`
   Read parquet corpus and optionally link abstract data.
+- `as_corpus_parquet()`
+  Project a search parquet dataset to a `(id, title, abstract)` corpus.
 
 ## Utility
 

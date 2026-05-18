@@ -51,10 +51,13 @@ dataset. Files with \code{data = null} are skipped.
 
 Output parquet rows include an \code{id} column for traceability:
 \itemize{
-\item Search: \verb{SEARCH_<hash>} from normalized \code{url} when available.
-\item Enrich web: \verb{ENRICH_WEB_<hash>} from normalized \code{url} when available.
-\item Enrich news: \verb{ENRICH_NEWS_<hash>} from normalized \code{url} when available.
-\item Summarize: \verb{SUMMARIZE_<hash>} from request metadata.
-\item FastGPT: \verb{FASTGPT_<hash>} from request metadata.
+\item Search: \verb{SEARCH_<hash>} from normalized \code{url}; one parquet partition
+per non-empty result type (\code{type=search}, \code{type=image}, ...).
+\item Extract: \verb{EXTRACT_<hash>} from normalized \code{url}; one row per
+extracted page.
 }
+
+Dispatch is metadata-driven: the sibling \verb{_query_meta.json} (written by
+\code{\link[=kagi_request]{kagi_request()}}) records the \code{query_class} and selects the correct
+writer.
 }

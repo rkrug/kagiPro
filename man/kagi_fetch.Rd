@@ -12,8 +12,10 @@ kagi_fetch(
   overwrite = FALSE,
   workers = 1,
   limit = NULL,
+  pages = 1,
   verbose = FALSE,
-  error_mode = c("stop", "write_dummy")
+  error_mode = c("stop", "write_dummy"),
+  corpus = NULL
 )
 }
 \arguments{
@@ -25,8 +27,8 @@ objects.}
 \item{project_folder}{Root folder for endpoint-scoped outputs. If \code{NULL}, a
 temporary directory is used.}
 
-\item{endpoint}{Optional endpoint override. One of \code{"search"},
-\code{"enrich_web"}, \code{"enrich_news"}, \code{"summarize"}, \code{"fastgpt"}.}
+\item{endpoint}{Optional endpoint override. One of \code{"search"} or
+\code{"extract"}.}
 
 \item{overwrite}{Logical. If \code{TRUE}, endpoint output folders are overwritten.}
 
@@ -34,10 +36,19 @@ temporary directory is used.}
 
 \item{limit}{Optional integer limit used for search/enrich request calls.}
 
+\item{pages}{Integer between 1 and 10. Number of pages to be downloaded.}
+
 \item{verbose}{Logical indicating whether progress messages should be shown.}
 
 \item{error_mode}{Error handling mode passed to \code{\link[=kagi_request]{kagi_request()}}.
 One of \code{"stop"} or \code{"write_dummy"}.}
+
+\item{corpus}{Optional named list controlling automatic conversion of
+search output to an openalexVectorise-shaped corpus. If supplied, must
+contain at least \code{project_dir}; optionally \code{corpus_name} (default
+\code{"corpus"}), \code{types} (default \code{"search"}), \code{abstract_from} (default
+\code{"snippet"}), and \code{overwrite} (default same as the top-level \code{overwrite}).
+Only honoured for \code{kagi_query_search} queries; ignored otherwise.}
 }
 \value{
 For a single endpoint, normalized parquet path. For mixed endpoint
@@ -57,7 +68,7 @@ Folder layout:
 \examples{
 \dontrun{
 conn <- kagi_connection(api_key = function() keyring::key_get("API_kagi"))
-q <- query_search("biodiversity", expand = FALSE)
+q <- kagi_query_search("biodiversity", expand = FALSE)
 
 kagi_fetch(
   connection = conn,

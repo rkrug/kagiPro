@@ -13,14 +13,21 @@
 #'   objects.
 #' @param project_folder Root folder for endpoint-scoped outputs. If `NULL`, a
 #'   temporary directory is used.
-#' @param endpoint Optional endpoint override. One of `"search"`,
-#'   `"enrich_web"`, `"enrich_news"`, `"summarize"`, `"fastgpt"`.
+#' @param endpoint Optional endpoint override. One of `"search"` or
+#'   `"extract"`.
 #' @param overwrite Logical. If `TRUE`, endpoint output folders are overwritten.
 #' @param workers Number of workers for list requests.
 #' @param limit Optional integer limit used for search/enrich request calls.
+#' @param pages Integer between 1 and 10. Number of pages to be downloaded.
 #' @param verbose Logical indicating whether progress messages should be shown.
 #' @param error_mode Error handling mode passed to [kagi_request()].
 #'   One of `"stop"` or `"write_dummy"`.
+#' @param corpus Optional named list controlling automatic conversion of
+#'   search output to an openalexVectorise-shaped corpus. If supplied, must
+#'   contain at least `project_dir`; optionally `corpus_name` (default
+#'   `"corpus"`), `types` (default `"search"`), `abstract_from` (default
+#'   `"snippet"`), and `overwrite` (default same as the top-level `overwrite`).
+#'   Only honoured for `kagi_query_search` queries; ignored otherwise.
 #'
 #' @return For a single endpoint, normalized parquet path. For mixed endpoint
 #'   query lists, a named list of normalized parquet paths by endpoint.
@@ -28,7 +35,7 @@
 #' @examples
 #' \dontrun{
 #' conn <- kagi_connection(api_key = function() keyring::key_get("API_kagi"))
-#' q <- query_search("biodiversity", expand = FALSE)
+#' q <- kagi_query_search("biodiversity", expand = FALSE)
 #'
 #' kagi_fetch(
 #'   connection = conn,
@@ -47,8 +54,10 @@ kagi_fetch <- function(
   overwrite = FALSE,
   workers = 1,
   limit = NULL,
+  pages = 1,
   verbose = FALSE,
-  error_mode = c("stop", "write_dummy")
+  error_mode = c("stop", "write_dummy"),
+  corpus = NULL
 ) {
   error_mode <- match.arg(error_mode)
 
@@ -62,10 +71,12 @@ kagi_fetch <- function(
   dir.create(project_folder, recursive = TRUE, showWarnings = FALSE)
   project_folder <- normalizePath(project_folder)
 
-  endpoint_levels <- c("search", "enrich_web", "enrich_news", "summarize", "fastgpt")
+  endpoint_levels <- c("search", "extract")
 
   normalize_endpoint <- function(x) {
-    if (is.null(x)) return(NULL)
+    if (is.null(x)) {
+      return(NULL)
+    }
     x <- tolower(x)
     if (!x %in% endpoint_levels) {
       stop("Unknown endpoint: `", x, "`.", call. = FALSE)
@@ -78,25 +89,13 @@ kagi_fetch <- function(
     switch(
       cls,
       kagi_query_search = "search",
-      kagi_query_enrich_web = "enrich_web",
-      kagi_query_enrich_news = "enrich_news",
-      kagi_query_summarize = "summarize",
-      kagi_query_fastgpt = "fastgpt",
+      kagi_query_extract = "extract",
       stop("Unsupported query class: ", cls, call. = FALSE)
     )
   }
 
   is_query_obj <- function(x) {
-    inherits(
-      x,
-      c(
-        "kagi_query_search",
-        "kagi_query_enrich_web",
-        "kagi_query_enrich_news",
-        "kagi_query_summarize",
-        "kagi_query_fastgpt"
-      )
-    )
+    inherits(x, kagi_query_classes())
   }
 
   build_endpoint_job <- function(endpoint_name, query_value) {
@@ -143,6 +142,7 @@ kagi_fetch <- function(
       connection = connection,
       query = job$query_value,
       limit = limit,
+      pages = pages,
       output = job$json_dir,
       overwrite = overwrite,
       append = !overwrite,
@@ -169,6 +169,35 @@ kagi_fetch <- function(
     out
   }
 
+  maybe_write_corpus <- function(job, parquet_path) {
+    if (is.null(corpus)) {
+      return(invisible(NULL))
+    }
+    if (!identical(job$endpoint_name, "search")) {
+      return(invisible(NULL))
+    }
+    if (is.null(parquet_path) || !dir.exists(parquet_path)) {
+      return(invisible(NULL))
+    }
+
+    if (!is.list(corpus) || is.null(corpus$project_dir)) {
+      stop(
+        "`corpus` must be a list with at least `project_dir`.",
+        call. = FALSE
+      )
+    }
+
+    as_corpus_parquet(
+      input = parquet_path,
+      project_dir = corpus$project_dir,
+      corpus_name = corpus$corpus_name %||% "corpus",
+      types = if ("types" %in% names(corpus)) corpus$types else "search",
+      abstract_from = corpus$abstract_from %||% "snippet",
+      id_prefix = corpus$id_prefix,
+      overwrite = corpus$overwrite %||% overwrite
+    )
+  }
+
   endpoint <- normalize_endpoint(endpoint)
 
   if (is_query_obj(query)) {
@@ -176,16 +205,24 @@ kagi_fetch <- function(
     endpoint_use <- endpoint %||% endpoint_detected
     job <- build_endpoint_job(endpoint_use, query)
     run_endpoint_request(job)
-    return(run_endpoint_parquet(job))
+    out <- run_endpoint_parquet(job)
+    maybe_write_corpus(job, out)
+    return(out)
   }
 
   if (!is.list(query) || length(query) == 0L) {
-    stop("`query` must be a query object or a non-empty list of query objects.", call. = FALSE)
+    stop(
+      "`query` must be a query object or a non-empty list of query objects.",
+      call. = FALSE
+    )
   }
 
   all_query_objs <- vapply(query, is_query_obj, logical(1))
   if (!all(all_query_objs)) {
-    stop("All elements in `query` must be `kagi_query_*` objects.", call. = FALSE)
+    stop(
+      "All elements in `query` must be `kagi_query_*` objects.",
+      call. = FALSE
+    )
   }
 
   endpoints <- vapply(query, detect_endpoint, character(1))
@@ -199,14 +236,18 @@ kagi_fetch <- function(
     }
     job <- build_endpoint_job(endpoint, query)
     run_endpoint_request(job)
-    return(run_endpoint_parquet(job))
+    out <- run_endpoint_parquet(job)
+    maybe_write_corpus(job, out)
+    return(out)
   }
 
   endpoint_unique <- unique(endpoints)
   if (length(endpoint_unique) == 1L) {
     job <- build_endpoint_job(endpoint_unique[[1]], query)
     run_endpoint_request(job)
-    return(run_endpoint_parquet(job))
+    out <- run_endpoint_parquet(job)
+    maybe_write_corpus(job, out)
+    return(out)
   }
 
   split_idx <- split(seq_along(query), endpoints)
@@ -222,6 +263,11 @@ kagi_fetch <- function(
 
   # Phase 2: convert all endpoints to parquet
   out <- lapply(jobs, run_endpoint_parquet)
+
+  # Phase 3: optional corpus materialisation for search jobs
+  for (nm in names(jobs)) {
+    maybe_write_corpus(jobs[[nm]], out[[nm]])
+  }
 
   out
 }

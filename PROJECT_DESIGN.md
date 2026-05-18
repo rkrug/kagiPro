@@ -51,13 +51,10 @@ This contract should remain stable across releases.
 
 ## Endpoint Coverage and Query Constructors
 
-Current endpoint constructors:
+Current endpoint constructors (Kagi v1 API):
 
-- `query_search()`
-- `query_enrich_web()`
-- `query_enrich_news()`
-- `query_summarize()`
-- `query_fastgpt()`
+- `kagi_query_search()` — search with workflows
+- `kagi_query_extract()` — URL → markdown
 - `kagi_fetch()` (high-level orchestrator)
 
 All constructors should:
@@ -173,6 +170,22 @@ Contract:
 - references embedded within the same skill page,
 - compact Skills menu (one entry per skill),
 - no duplicated copied skill/reference text in vignettes.
+
+## Recent Change Summary (0.5.0)
+
+- Retired the Kagi v0 API entirely. v1 is the only supported API.
+- Removed v0 query constructors (`query_search`, `query_enrich_web`,
+  `query_enrich_news`, `query_summarize`, `query_fastgpt`) and the v0-only
+  `summarize_with_kagi()` helper.
+- Renamed v1 constructors so the `_v1` suffix is no longer needed:
+  `query_search_v1()` → `kagi_query_search()`,
+  `query_extract()` → `kagi_query_extract()`. S3 class names match.
+- `kagi_connection()` keeps the `api_version` argument for forward
+  compatibility but accepts only `"v1"`; auth is always `Bearer`.
+- `kagi_fetch()` writes search output to `<project>/search/` (was
+  `<project>/search_v1/`). Existing folders need a rename.
+- `kagi_request()` adds a `pages` argument (1–10) so callers can request
+  multiple body-paginated pages per query.
 
 ## Recent Change Summary (toward 0.4.1)
 

@@ -34,10 +34,7 @@ endpoint_from_query_class <- function(query_class) {
   switch(
     query_class,
     kagi_query_search = "search",
-    kagi_query_summarize = "summarize",
-    kagi_query_fastgpt = "fastgpt",
-    kagi_query_enrich_web = "enrich_web",
-    kagi_query_enrich_news = "enrich_news",
+    kagi_query_extract = "extract",
     stop("Unknown Query Class: ", query_class, call. = FALSE)
   )
 }
@@ -49,11 +46,28 @@ endpoint_path_from_query_class <- function(query_class) {
   switch(
     query_class,
     kagi_query_search = "search",
-    kagi_query_summarize = "summarize",
-    kagi_query_fastgpt = "fastgpt",
-    kagi_query_enrich_web = "enrich/web",
-    kagi_query_enrich_news = "enrich/news",
+    kagi_query_extract = "extract",
     stop("Unknown Query Class: ", query_class, call. = FALSE)
+  )
+}
+
+#' Which API version does a query class belong to
+#' @noRd
+#' @keywords internal
+api_version_for_query_class <- function(query_class) {
+  if (query_class %in% kagi_query_classes()) {
+    return("v1")
+  }
+  stop("Unknown Query Class: ", query_class, call. = FALSE)
+}
+
+#' All supported query classes
+#' @noRd
+#' @keywords internal
+kagi_query_classes <- function() {
+  c(
+    "kagi_query_search",
+    "kagi_query_extract"
   )
 }
 
@@ -61,10 +75,17 @@ endpoint_path_from_query_class <- function(query_class) {
 #' @noRd
 #' @keywords internal
 serialize_query_payload <- function(query, query_class = class(query)[[1]]) {
-  if (query_class %in% c("kagi_query_search", "kagi_query_enrich_web", "kagi_query_enrich_news")) {
-    return(as.character(query)[[1]])
-  }
   unclass(query)
+}
+
+#' Strip the kagi_query_* class so the object can be serialized as a plain list
+#' for JSON body construction.
+#' @noRd
+#' @keywords internal
+unclass_query <- function(query) {
+  cls <- class(query)
+  class(query) <- cls[!cls %in% kagi_query_classes()]
+  query
 }
 
 #' Reconstruct query object from persisted metadata
@@ -74,28 +95,13 @@ reconstruct_query_from_meta <- function(query_class, query_payload) {
   switch(
     query_class,
     kagi_query_search = {
-      q <- as.character(query_payload %||% "")
-      class(q) <- c("kagi_query_search", "character")
-      q
-    },
-    kagi_query_enrich_web = {
-      q <- as.character(query_payload %||% "")
-      class(q) <- c("kagi_query_enrich_web", "kagi_query_search", "character")
-      q
-    },
-    kagi_query_enrich_news = {
-      q <- as.character(query_payload %||% "")
-      class(q) <- c("kagi_query_enrich_news", "kagi_query_search", "character")
-      q
-    },
-    kagi_query_summarize = {
       q <- if (is.list(query_payload)) query_payload else list()
-      class(q) <- c("kagi_query_summarize", "list")
+      class(q) <- c("kagi_query_search", "list")
       q
     },
-    kagi_query_fastgpt = {
+    kagi_query_extract = {
       q <- if (is.list(query_payload)) query_payload else list()
-      class(q) <- c("kagi_query_fastgpt", "list")
+      class(q) <- c("kagi_query_extract", "list")
       q
     },
     stop("Unsupported query_class in metadata: ", query_class, call. = FALSE)

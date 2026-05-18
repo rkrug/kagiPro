@@ -1,6 +1,6 @@
 #' @keywords internal
 content_supported_endpoints <- function() {
-  c("search", "enrich", "enrich_web", "enrich_news")
+  c("search")
 }
 
 #' @keywords internal

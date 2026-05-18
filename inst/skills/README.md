@@ -27,13 +27,8 @@ If explicitly approved and `skills/r-package-developer` is missing, install it w
 - `r-package-developer` (external path: `skills/r-package-developer`)
   Generic R-package developer baseline skill (portable across repos) for workflow, validation, branch governance, and commit standards.
 - `user-search`
-  Use for Search endpoint workflows aligned with `vignettes/search-endpoint.qmd`.
-- `user-enrich`
-  Use for Enrich endpoint workflows aligned with `vignettes/enrich-endpoint.qmd`.
-- `user-summarize`
-  Use for Summarize endpoint workflows aligned with `vignettes/summarize-endpoint.qmd`.
-- `user-fastgpt`
-  Use for FastGPT endpoint workflows aligned with `vignettes/fastgpt-endpoint.qmd`.
+  Use for Search and Extract endpoint workflows aligned with
+  `vignettes/quickstart.qmd` and `vignettes/v1-api-and-corpus.qmd`.
 - `user-corpus-workflow`
   Use for the full corpus pipeline aligned with `vignettes/corpus-workflow.qmd`.
 

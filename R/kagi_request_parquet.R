@@ -1,3 +1,125 @@
+#' Known search result types in the `/search` response `data` object.
+#' @noRd
+#' @keywords internal
+KAGI_SEARCH_TYPES <- c(
+  "search", "image", "video", "podcast", "podcast_creator", "news",
+  "adjacent_question", "direct_answer", "interesting_news",
+  "interesting_finds", "infobox", "code", "package_tracking",
+  "public_records", "weather", "related_search", "listicle", "web_archive"
+)
+
+#' Write a search response JSON page into a Hive-partitioned parquet
+#' dataset. Each non-empty result type becomes one `type=<type>/` partition.
+#' @noRd
+#' @keywords internal
+write_search_parquet <- function(con, fn, query_name, pn, output, verbose) {
+  any_written <- FALSE
+  present_types <- tryCatch(
+    {
+      payload <- jsonlite::fromJSON(fn, simplifyVector = FALSE)
+      intersect(KAGI_SEARCH_TYPES, names(payload$data %||% list()))
+    },
+    error = function(e) KAGI_SEARCH_TYPES
+  )
+  for (type_key in present_types) {
+    stmt <- sprintf(
+      "
+      COPY (
+        SELECT
+          '%s' AS query,
+          '%s' AS page,
+          '%s' AS type,
+          CASE
+            WHEN u.url IS NOT NULL AND u.url <> '' THEN
+              concat('SEARCH_', md5(lower(regexp_replace(trim(u.url), '#.*$', ''))))
+            ELSE
+              concat('SEARCH_', md5(concat('%s', '::', '%s', '::', coalesce(cast(u.title AS VARCHAR), 'na'))))
+          END AS id,
+          u.*
+        FROM (
+          SELECT UNNEST(data.%s) AS u
+          FROM read_json_auto('%s') AS res
+          WHERE data.%s IS NOT NULL
+        )
+      ) TO '%s'
+      (FORMAT PARQUET, COMPRESSION SNAPPY, PARTITION_BY ('query', 'type'), APPEND)
+      ",
+      query_name, pn, type_key,
+      type_key, query_name,
+      type_key, fn, type_key,
+      output
+    )
+    ok <- tryCatch(
+      {
+        DBI::dbExecute(conn = con, statement = stmt)
+        TRUE
+      },
+      error = function(e) {
+        # Most likely cause: this JSON file's inferred STRUCT for `data` has
+        # no `<type_key>` field — that type simply wasn't returned for this
+        # query/page. Silently skip.
+        if (verbose) {
+          message("   search type `", type_key, "` skipped: ", conditionMessage(e))
+        }
+        FALSE
+      }
+    )
+    if (isTRUE(ok)) any_written <- TRUE
+  }
+  if (verbose && isTRUE(any_written)) {
+    message("   Done (search)")
+  }
+  invisible(any_written)
+}
+
+#' Write an extract response JSON page into a Hive-partitioned parquet
+#' dataset. Each input URL becomes one row with `url` + `markdown`.
+#' @noRd
+#' @keywords internal
+write_extract_parquet <- function(con, fn, query_name, pn, output, verbose) {
+  stmt <- sprintf(
+    "
+    COPY (
+      SELECT
+        '%s' AS query,
+        '%s' AS page,
+        CASE
+          WHEN u.url IS NOT NULL AND u.url <> '' THEN
+            concat('EXTRACT_', md5(lower(trim(u.url))))
+          ELSE
+            concat('EXTRACT_', md5(concat('%s', '::', '%s')))
+        END AS id,
+        u.*
+      FROM (
+        SELECT UNNEST(res.data) AS u
+        FROM read_json_auto('%s') AS res
+      )
+    ) TO '%s'
+    (FORMAT PARQUET, COMPRESSION SNAPPY, PARTITION_BY 'query', APPEND)
+    ",
+    query_name, pn,
+    query_name, pn,
+    fn,
+    output
+  )
+  ok <- tryCatch(
+    {
+      DBI::dbExecute(conn = con, statement = stmt)
+      TRUE
+    },
+    error = function(e) {
+      if (verbose) {
+        message("   extract skipped: ", conditionMessage(e))
+      }
+      FALSE
+    }
+  )
+  if (verbose && isTRUE(ok)) {
+    message("   Done (extract)")
+  }
+  invisible(ok)
+}
+
 #' Convert JSON files to Apache Parquet files
 #'
 #' Convert a directory of JSON files written by [kagi_request()] into an
@@ -27,11 +149,14 @@
 #'   dataset. Files with `data = null` are skipped.
 #'
 #'   Output parquet rows include an `id` column for traceability:
-#'   - Search: `SEARCH_<hash>` from normalized `url` when available.
-#'   - Enrich web: `ENRICH_WEB_<hash>` from normalized `url` when available.
-#'   - Enrich news: `ENRICH_NEWS_<hash>` from normalized `url` when available.
-#'   - Summarize: `SUMMARIZE_<hash>` from request metadata.
-#'   - FastGPT: `FASTGPT_<hash>` from request metadata.
+#'   - Search: `SEARCH_<hash>` from normalized `url`; one parquet partition
+#'     per non-empty result type (`type=search`, `type=image`, ...).
+#'   - Extract: `EXTRACT_<hash>` from normalized `url`; one row per
+#'     extracted page.
+#'
+#'   Dispatch is metadata-driven: the sibling `_query_meta.json` (written by
+#'   [kagi_request()]) records the `query_class` and selects the correct
+#'   writer.
 #'
 #' @importFrom duckdb duckdb
 #' @importFrom DBI dbConnect dbDisconnect dbExecute
@@ -159,12 +284,6 @@ kagi_request_parquet <- function(
     stop("All JSON files must be of the same type!")
   }
 
-  # if (types == "group") {
-  #   types <- "group_by"
-  # }
-
-  # if (types == "single") {}
-
   # Go through all jsons, i.e. one per page --------------------------------
 
   has_subdirs <- length(list.dirs(input_json)) > 1
@@ -195,11 +314,21 @@ kagi_request_parquet <- function(
       strsplit(split = "_")
     pn <- pn[[1]]
 
-    # pn <- pn[[1]][length(pn[[1]])] |>
     pn <- pn[length(pn)] |>
       gsub(pattern = ".json", replacement = "")
 
     query_name <- if (has_subdirs) basename(dirname(fn)) else "query_1"
+
+    # Resolve query class from sibling _query_meta.json ---------------------
+    meta_path <- file.path(dirname(fn), "_query_meta.json")
+    query_class <- NULL
+    if (file.exists(meta_path)) {
+      qm <- tryCatch(
+        jsonlite::fromJSON(meta_path, simplifyVector = FALSE),
+        error = function(e) NULL
+      )
+      query_class <- qm$query_class
+    }
 
     # Check if data is empty -------------------------------------------------
 
@@ -210,9 +339,6 @@ kagi_request_parquet <- function(
         fn
       )
     )$type
-
-    type <- basename(fn)
-    type <- sub("_[0-9]+\\.json$", "", type)
 
     data_type_chr <- toupper(as.character(data_type %||% ""))
     if (
@@ -237,178 +363,20 @@ kagi_request_parquet <- function(
       next
     }
 
-    # Extract and convert the data -------------------------------------------
+    # Metadata-driven dispatch -----------------------------------------------
+    if (identical(query_class, "kagi_query_search")) {
+      write_search_parquet(con, fn, query_name, pn, output, verbose)
+      next
+    }
+    if (identical(query_class, "kagi_query_extract")) {
+      write_extract_parquet(con, fn, query_name, pn, output, verbose)
+      next
+    }
 
-    statement <- switch(
-      type,
-      "search" = sprintf(
-        "
-          COPY (
-            SELECT
-              '%s' AS query,
-              page,
-              CASE
-                WHEN u.url IS NOT NULL AND u.url <> '' THEN
-                  concat('SEARCH_', md5(lower(regexp_replace(trim(u.url), '#.*$', ''))))
-                ELSE
-                  concat('SEARCH_', md5(concat('%s', '::', coalesce(cast(u.t AS VARCHAR), 'na'))))
-              END AS id,
-              u.*
-            FROM (
-              SELECT
-                '%s' AS page,
-                UNNEST(res.data) AS u
-              FROM read_json_auto('%s') AS res
-            )
-          ) TO
-            '%s'
-          (FORMAT PARQUET, COMPRESSION SNAPPY, PARTITION_BY 'query', APPEND)
-        ",
-        query_name,
-        pn,
-        pn,
-        fn,
-        output
-      ),
-      "summarize" = sprintf(
-        "
-          COPY (
-            SELECT
-              '%s' AS query,
-              '%s' AS page,
-              concat('SUMMARIZE_', md5(coalesce(cast(res.meta.id AS VARCHAR), '%s'))) AS id,
-              UNNEST(res.data) AS u
-            FROM read_json_auto('%s') AS res
-            WHERE res.data IS NOT NULL
-          ) TO
-              '%s'
-            (FORMAT PARQUET, COMPRESSION SNAPPY, PARTITION_BY 'query', APPEND)
-        ",
-        query_name,
-        pn,
-        pn,
-        fn,
-        output
-      ),
-      "fastgpt" = sprintf(
-        "
-          COPY (
-            SELECT
-              '%s' AS query,
-              '%s' AS page,
-              concat('FASTGPT_', md5(coalesce(cast(res.meta.id AS VARCHAR), '%s'))) AS id,
-              UNNEST(res.data) AS u
-            FROM read_json_auto('%s') AS res
-            WHERE res.data IS NOT NULL
-          ) TO
-              '%s'
-            (FORMAT PARQUET, COMPRESSION SNAPPY, PARTITION_BY 'query', APPEND)
-        ",
-        query_name,
-        pn,
-        pn,
-        fn,
-        output
-      ),
-      "enrich_web" = sprintf(
-        "
-          COPY (
-            SELECT
-              '%s' AS query,
-              page,
-              CASE
-                WHEN u.url IS NOT NULL AND u.url <> '' THEN
-                  concat('ENRICH_WEB_', md5(lower(regexp_replace(trim(u.url), '#.*$', ''))))
-                ELSE
-                  concat('ENRICH_WEB_', md5(concat('%s', '::', coalesce(cast(u.t AS VARCHAR), 'na'))))
-              END AS id,
-              u.*
-            FROM (
-              SELECT
-                '%s' AS page,
-                UNNEST(res.data) AS u
-              FROM read_json_auto('%s') AS res
-            )
-          ) TO
-            '%s'
-          (FORMAT PARQUET, COMPRESSION SNAPPY, PARTITION_BY 'query', APPEND)
-        ",
-        query_name,
-        pn,
-        pn,
-        fn,
-        output
-      ),
-      "enrich_news" = sprintf(
-        "
-          COPY (
-            SELECT
-              '%s' AS query,
-              page,
-              CASE
-                WHEN u.url IS NOT NULL AND u.url <> '' THEN
-                  concat('ENRICH_NEWS_', md5(lower(regexp_replace(trim(u.url), '#.*$', ''))))
-                ELSE
-                  concat('ENRICH_NEWS_', md5(concat('%s', '::', coalesce(cast(u.t AS VARCHAR), 'na'))))
-              END AS id,
-              u.*
-            FROM (
-              SELECT
-                '%s' AS page,
-                UNNEST(res.data) AS u
-              FROM read_json_auto('%s') AS res
-            )
-          ) TO
-            '%s'
-          (FORMAT PARQUET, COMPRESSION SNAPPY, PARTITION_BY 'query', APPEND)
-        ",
-        query_name,
-        pn,
-        pn,
-        fn,
-        output
-      ),
-      "enrich" = sprintf(
-        "
-          COPY (
-            SELECT
-              '%s' AS query,
-              page,
-              CASE
-                WHEN u.url IS NOT NULL AND u.url <> '' THEN
-                  concat('ENRICH_', md5(lower(regexp_replace(trim(u.url), '#.*$', ''))))
-                ELSE
-                  concat('ENRICH_', md5(concat('%s', '::', coalesce(cast(u.t AS VARCHAR), 'na'))))
-              END AS id,
-              u.*
-            FROM (
-              SELECT
-                '%s' AS page,
-                UNNEST(res.data) AS u
-              FROM read_json_auto('%s') AS res
-            )
-          ) TO
-            '%s'
-          (FORMAT PARQUET, COMPRESSION SNAPPY, PARTITION_BY 'query', APPEND)
-        ",
-        query_name,
-        pn,
-        pn,
-        fn,
-        output
-      ),
-      stop("Unknown type of JSON files: ", type)
-    )
-
-    try(
-      {
-        ## save as page partitioned parquet
-        DBI::dbExecute(conn = con, statement = statement)
-        if (verbose) {
-          message("   Done")
-        }
-      },
-      silent = !verbose
+    stop(
+      "Unknown or missing query_class in `", meta_path,
+      "`. Expected `kagi_query_search` or `kagi_query_extract`.",
+      call. = FALSE
     )
   }
 

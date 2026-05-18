@@ -22,8 +22,8 @@ markdown_abstract(
 \arguments{
 \item{project_folder}{Root project folder containing endpoint subfolders.}
 
-\item{endpoint}{Optional endpoint selector (for example `"search"` or
-`"enrich_news"`). If `NULL`, all supported endpoints are considered.}
+\item{endpoint}{Optional endpoint selector (currently only `"search"`).
+If `NULL`, all supported endpoints are considered.}
 
 \item{query_name}{Optional query selector. If `NULL`, all query partitions
 are considered.}
@@ -39,8 +39,9 @@ are considered.}
 
 \item{model}{Provider-specific model/engine.}
 
-\item{connection}{Optional [kagi_connection()] object. Used for
-[summarize_with_kagi()] when not supplied via `provider_args`.}
+\item{connection}{Optional [kagi_connection()] object. Currently unused
+but retained for forward compatibility with future Kagi-side
+summarization endpoints.}
 
 \item{provider_args}{Optional named list forwarded to `summarizer_fn`.}
 

@@ -5,12 +5,13 @@ description: Use this skill for kagiPro Search endpoint workflows, including que
 
 # User Search Workflow
 
-Use this skill for Search endpoint tasks aligned with `vignettes/search-endpoint.qmd`.
+Use this skill for Search endpoint tasks aligned with `vignettes/quickstart.qmd` and `vignettes/v1-api-and-corpus.qmd`.
 
 ## Required Workflow Order
 
-1. Create `kagi_connection()`.
-2. Build query objects with `query_search()`.
+1. Create `kagi_connection()` (defaults to Kagi v1 API; `Bearer` auth).
+2. Build query objects with `kagi_query_search()` — workflows: `search`,
+   `images`, `videos`, `news`, `podcasts`.
 3. Prefer `kagi_fetch()` for project-folder workflows.
 4. Use `kagi_request()` + `kagi_request_parquet()` for low-level control.
 
@@ -20,7 +21,8 @@ Do not skip steps in guidance unless the user already provides a reusable connec
 ## Allowed Function Set
 
 - `kagi_connection()`
-- `query_search()`
+- `kagi_query_search()`
+- `kagi_query_extract()` (URL → markdown handoff)
 - `open_search_query()`
 - `kagi_fetch()`
 - `kagi_request()`
