@@ -1,3 +1,25 @@
+#' Allowed `file_type` values for `kagi_query_search()`.
+#' @noRd
+#' @keywords internal
+KAGI_SEARCH_FILE_TYPES <- c(
+  "pdf", "ps",
+  "csv",
+  "epub",
+  "kml", "kmz",
+  "gpx",
+  "hwp",
+  "htm", "html",
+  "xls", "xlsx",
+  "ppt", "pptx",
+  "doc", "docx",
+  "odp", "ods", "odt",
+  "rtf",
+  "svg",
+  "tex",
+  "txt",
+  "xml"
+)
+
 #' Build a Kagi Search query
 #'
 #' Construct one or more query objects of class `kagi_query_search` for the
@@ -33,12 +55,25 @@
 #' @param filters Optional named list (`region`, `after`, `before`).
 #' @param extract Optional named list (`count`, `timeout`) requesting page
 #'   content extraction. Note: this incurs additional Extract-API cost.
+#' @param file_type Optional character vector of file-type extensions to
+#'   restrict results to. Each value is appended to the search string as a
+#'   `filetype:<ext>` operator (multiple values are combined by Kagi as
+#'   OR). Allowed values (case-insensitive) match Kagi's "Format" filter:
+#'   `pdf`, `ps`, `csv`, `epub`, `kml`, `kmz`, `gpx`, `hwp`, `htm`, `html`,
+#'   `xls`, `xlsx`, `ppt`, `pptx`, `doc`, `docx`, `odp`, `ods`, `odt`,
+#'   `rtf`, `svg`, `tex`, `txt`, `xml`.
+#' @param domain Optional character vector of domains to restrict results to.
+#'   Each value is appended to the search string as a `site:<domain>`
+#'   operator (multiple values are combined by Kagi as OR).
+#' @param where Where to look for the query term within a result. One of
+#'   `"anywhere"` (default — no operator added), `"title"` (wraps the term
+#'   in `intitle:"..."`), or `"url"` (wraps in `inurl:"..."`).
 #' @param safe_search Optional logical. Default `TRUE` (omits NSFW content).
 #' @param personalizations Optional named list (`domains`, `regexes`).
 #' @param expand Logical, default `TRUE`. If `TRUE` and `query` has multiple
 #'   terms, produce one query object per term.
 #' @param open_in_browser Logical, default `FALSE`. If `TRUE`, each query is
-#'   also opened in the default browser via [open_search_query()].
+#'   also opened in the default browser via [kagi_open_search_query()].
 #'
 #' @return A named list of `kagi_query_search` objects, suitable for
 #'   [kagi_request()] or [kagi_fetch()].
@@ -80,11 +115,15 @@ kagi_query_search <- function(
   limit = NULL,
   filters = NULL,
   extract = NULL,
+  file_type = NULL,
+  domain = NULL,
+  where = c("anywhere", "title", "url"),
   safe_search = NULL,
   personalizations = NULL,
   expand = TRUE,
   open_in_browser = FALSE
 ) {
+  where <- match.arg(where)
   if (missing(query) || is.null(query)) {
     stop("`query` is required.", call. = FALSE)
   }
@@ -137,6 +176,29 @@ kagi_query_search <- function(
       call. = FALSE
     )
   }
+  if (!is.null(file_type)) {
+    if (!is.character(file_type) || length(file_type) == 0L || any(!nzchar(trimws(file_type)))) {
+      stop("`file_type` must be a non-empty character vector.", call. = FALSE)
+    }
+    file_type <- tolower(trimws(file_type))
+    bad <- setdiff(file_type, KAGI_SEARCH_FILE_TYPES)
+    if (length(bad) > 0L) {
+      stop(
+        "Unsupported `file_type` value(s): ",
+        paste(bad, collapse = ", "),
+        ". Allowed: ",
+        paste(KAGI_SEARCH_FILE_TYPES, collapse = ", "),
+        ".",
+        call. = FALSE
+      )
+    }
+  }
+  if (!is.null(domain)) {
+    if (!is.character(domain) || length(domain) == 0L || any(!nzchar(trimws(domain)))) {
+      stop("`domain` must be a non-empty character vector.", call. = FALSE)
+    }
+    domain <- trimws(domain)
+  }
   if (!is.null(safe_search)) {
     stopifnot(
       is.logical(safe_search),
@@ -154,6 +216,21 @@ kagi_query_search <- function(
     list(paste(query, collapse = " "))
   }
   queries <- lapply(queries, trimws)
+
+  if (!identical(where, "anywhere")) {
+    op <- switch(where, title = "intitle", url = "inurl")
+    queries <- lapply(queries, function(q) sprintf('%s:"%s"', op, q))
+  }
+
+  if (!is.null(file_type)) {
+    suffix <- paste(paste0("filetype:", file_type), collapse = " ")
+    queries <- lapply(queries, function(q) trimws(paste(q, suffix)))
+  }
+
+  if (!is.null(domain)) {
+    suffix <- paste(paste0("site:", domain), collapse = " ")
+    queries <- lapply(queries, function(q) trimws(paste(q, suffix)))
+  }
 
   shared <- Filter(
     Negate(is.null),
@@ -181,9 +258,7 @@ kagi_query_search <- function(
   names(result) <- paste0("query_", seq_along(result))
 
   if (isTRUE(open_in_browser)) {
-    for (obj in result) {
-      open_search_query(obj$query)
-    }
+    kagi_open_search_query(result)
   }
 
   result

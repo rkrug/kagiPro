@@ -62,5 +62,6 @@ functions.
 
 ## Utility
 
-- `open_search_query()`
-  Open rendered search query in browser for inspection.
+- `kagi_open_search_query()`
+  Open a `kagi_query_search` object (or list of them) in the browser for
+  inspection.

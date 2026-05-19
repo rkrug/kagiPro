@@ -15,6 +15,9 @@ kagi_query_search(
   limit = NULL,
   filters = NULL,
   extract = NULL,
+  file_type = NULL,
+  domain = NULL,
+  where = c("anywhere", "title", "url"),
   safe_search = NULL,
   personalizations = NULL,
   expand = TRUE,
@@ -50,6 +53,22 @@ the API (body-paginated; the caller controls this directly).}
 \item{extract}{Optional named list (\code{count}, \code{timeout}) requesting page
 content extraction. Note: this incurs additional Extract-API cost.}
 
+\item{file_type}{Optional character vector of file-type extensions to
+restrict results to. Each value is appended to the search string as a
+\verb{filetype:<ext>} operator (multiple values are combined by Kagi as
+OR). Allowed values (case-insensitive) match Kagi's "Format" filter:
+\code{pdf}, \code{ps}, \code{csv}, \code{epub}, \code{kml}, \code{kmz}, \code{gpx}, \code{hwp}, \code{htm}, \code{html},
+\code{xls}, \code{xlsx}, \code{ppt}, \code{pptx}, \code{doc}, \code{docx}, \code{odp}, \code{ods}, \code{odt},
+\code{rtf}, \code{svg}, \code{tex}, \code{txt}, \code{xml}.}
+
+\item{domain}{Optional character vector of domains to restrict results to.
+Each value is appended to the search string as a \verb{site:<domain>}
+operator (multiple values are combined by Kagi as OR).}
+
+\item{where}{Where to look for the query term within a result. One of
+\code{"anywhere"} (default — no operator added), \code{"title"} (wraps the term
+in \code{intitle:"..."}), or \code{"url"} (wraps in \code{inurl:"..."}).}
+
 \item{safe_search}{Optional logical. Default \code{TRUE} (omits NSFW content).}
 
 \item{personalizations}{Optional named list (\code{domains}, \code{regexes}).}
@@ -58,7 +77,7 @@ content extraction. Note: this incurs additional Extract-API cost.}
 terms, produce one query object per term.}
 
 \item{open_in_browser}{Logical, default \code{FALSE}. If \code{TRUE}, each query is
-also opened in the default browser via \code{\link[=open_search_query]{open_search_query()}}.}
+also opened in the default browser via \code{\link[=kagi_open_search_query]{kagi_open_search_query()}}.}
 }
 \value{
 A named list of \code{kagi_query_search} objects, suitable for

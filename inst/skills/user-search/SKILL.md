@@ -23,7 +23,7 @@ Do not skip steps in guidance unless the user already provides a reusable connec
 - `kagi_connection()`
 - `kagi_query_search()`
 - `kagi_query_extract()` (URL → markdown handoff)
-- `open_search_query()`
+- `kagi_open_search_query()`
 - `kagi_fetch()`
 - `kagi_request()`
 - `kagi_request_parquet()`

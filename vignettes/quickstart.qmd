@@ -95,7 +95,8 @@ unchanged by `kagi_request()` / `kagi_fetch()`.
 To inspect a query interactively in the browser:
 
 ```r
-open_search_query(q[[1]]$query)
+kagi_open_search_query(q[[1]])   # single
+kagi_open_search_query(q)        # all queries in the list
 ```
 
 ## Execute and persist search results (low-level)
