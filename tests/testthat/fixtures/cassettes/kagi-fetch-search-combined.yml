@@ -1,0 +1,72 @@
+http_interactions:
+- request:
+    method: POST
+    uri: https://kagi.com/api/v1/search
+    body:
+      string: '{"query":"kagiPro test","workflow":"search","limit":5,"page":1}'
+  response:
+    status: 200
+    headers:
+      x-kagi-trace: e9f6bb880d6517a419ccae0bef6dd0f2
+      content-type: application/json
+      content-encoding: gzip
+      content-length: '2482'
+      via: 1.1 google
+      date: Tue, 19 May 2026 08:56:05 GMT
+      x-frame-options: SAMEORIGIN
+      strict-transport-security: max-age=31536000; includeSubDomains; preload
+      alt-svc: h3=":443"; ma=2592000
+    body:
+      string: '{"meta":{"trace":"e9f6bb880d6517a419ccae0bef6dd0f2","ms":8,"node":"europe-west4"},"data":{"search":[{"url":"https://rkrug.github.io/kagiPro/articles/skills-maintainer-workflow.html","title":"Skill:
+        Maintainer Workflow • kagiPro","snippet":"Test and Validation Gate Run targeted
+        tests for changed modules. Validate cassette integrity if HTTP behavior changed.
+        Confirm no stale references remain (legacy names, old fixture paths).","props":{"language":"en","group_id":"rkrug.github.io"}},{"url":"https://rkrug.github.io/kagiPro/articles/skills-maintainer-release-sync.html","title":"Skill:
+        Maintainer Release Sync • kagiPro - rkrug.github.io","snippet":"Maintainer
+        Release Sync Use this skill for final consistency checks before release or
+        merge.","props":{"language":"en","group_id":"rkrug.github.io"}},{"url":"https://rkrug.github.io/kagiPro/news/index.html","title":"Changelog
+        • kagiPro","snippet":"Removed unused legacy package assets from inst/ (extdata,
+        plantuml, query_test.R). Added AI-doc consistency check script (scripts/check-ai-docs.sh)
+        and wired it into CI (R-CMD-check). Added generic reusable maintainer skill
+        r-package-developer with: branch protection baseline, release/validation checklist,
+        commit template, skill design standard.","props":{"language":"en","group_id":"rkrug.github.io"}},{"url":"https://rkrug.r-universe.dev/kagiPro/doc/quickstart.html","title":"kagiPro
+        Quickstart Guide","snippet":"This quickstart is a complete first run with
+        kagiPro: install the package, create a secure connection, build queries, execute
+        requests, and store responses in a format ready for analysis. The package
+        is intentionally structured around a stable pattern: Create query objects
+        with endpoint-specific constructors.","time":"2026-04-16T09:33:14Z","props":{"language":"en","language_probability":0.8304932713508606,"group_id":"rkrug.r-universe.dev"}},{"url":"https://rkrug.r-universe.dev/kagiPro/doc/search-endpoint.html","title":"kagiPro
+        Search Endpoint Guide","snippet":"Search Endpoint: From Question to Reusable
+        Search Pipeline. The Search endpoint is usually the first place where users
+        build production workflows with kagiPro. This guide follows one realistic
+        path: starting from a single question, refining the query syntax, scaling
+        to batches, and choosing an error strategy that matches your use case. Start
+        with a reusable connection.","time":"2026-04-27T17:29:16Z","props":{"language":"en","language_probability":0.8240002989768982,"group_id":"rkrug.r-universe.dev"}}],"adjacent_question":[{"url":"https://pharmeasy.in/health-care/products/kabipro-vanilla-sugarfree-whey-protein-tin-of-400-g-179699","title":"Kabipro
+        Vanilla Sugarfree Whey Protein Tin Of 400 G - PharmEasy","snippet":"Kabipro
+        Protein 100% whey powder is sugar-free and helps in digestion as well as boosts
+        immunity. It is available in a tasty vanilla flavour and also prevents the
+        deterioration of muscles and tissues. Kabipro powder is an ideal nutritional
+        supplement to help fill up the protein gap in your daily diet.","props":{"question":"What
+        is kabipro used for?","language":"en","language_probability":0.9249500632286072}},{"url":"https://www.amazon.in/Kabi-Pro-100-Whey-Protein/dp/B0FCSJNDHL","title":"Kabi-
+        Pro 100% Whey Protein – Premium Muscle Recovery ...","snippet":"Packed with
+        fast-absorbing whey protein isolate and concentrate, it delivers a powerful
+        blend of essential amino acids, including BCAAs, to promote lean muscle growth,
+        speed up recovery, and enhance performance.","props":{"question":"Is kabi
+        pro good for building muscle?","language":"en","language_probability":0.8798485994338989}},{"url":"https://2xnutrition.com/blogs/articles/comparing-10-best-whey-proteins-in-india-2025-edition","title":"10
+        Best Whey Proteins in India 2026 — Tested &amp; Ranked - 2X Nutrition","snippet":"Top
+        10 Whey Protein Brands in India (2026)\n12X Nutrition Pure Whey Isolate –
+        India''s #1 Cleanest Whey Protein. ...\n2Optimum Nutrition Gold Standard Whey.
+        ...\n3MuscleBlaze Whey Gold. ...\n4Nutrabay Pure Whey Isolate. ...\n5As-It-Is
+        Whey Protein. ...\n6Avatar Whey Gold. ...\n7GNC Pro Performance Whey. ...\n8BigMuscles
+        Premium Whey.","props":{"question":"Which is the most trusted brand in whey
+        protein?"}},{"url":"https://www.prnewswire.com/news-releases/bipro-usa-releases-bipro-bold-a-flavor-packed-100-protein-isolate-with-prebiotic-fiber-and-mcts-300787701.html","title":"BiPro®
+        USA releases BiPro BOLD™, a flavor-packed 100% Protein ...","snippet":"BiPro
+        BOLD truly provides consumers with a powerful protein solution for any time
+        of the day.\" BiPro BOLD notable features and benefits include: MCTs for satiety
+        and energy. Prebiotic fiber to promote healthy digestion.","props":{"question":"What
+        are the benefits of BiPro?","language":"en","language_probability":0.9242601990699768}}],"video":[{"url":"https://www.youtube.com/watch?v=vSoWIHUEcD4","title":"NAKPRO
+        IMPACT WHEY PROTEIN LAB TEST REPORT - YouTube","snippet":"Instagram : https://instagram.com/trustified.in?igshid=YmMyMTA2M2Y=
+        Website : https://www.trustified.in Our shop website ...","time":"2024-10-31T00:00:00Z","props":{"group_id":"youtube.com"}},{"url":"https://www.youtube.com/watch?v=n3oCl1NB_Wg","title":"[
+        KagePro model test ] •Party_Rock_Anthem• - YouTube","snippet":"Hello guys!
+        this is a fanmade model test of kagerou project edited by me. i do not own
+        anything in this vid [ except the editing ]. In this video, only kido,...","props":{"language":"en","group_id":"youtube.com"}}]}}'
+  recorded_at: 2026-05-19 08:56:05
+recorded_with: VCR-vcr/2.0.0

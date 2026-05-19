@@ -36,7 +36,8 @@ Suggests:
     quarto,
     rmarkdown,
     testthat (>= 3.0.0),
-    vcr
+    vcr,
+    withr
 VignetteBuilder: knitr, quarto
 RoxygenNote: 7.3.3
 Config/testthat/edition: 3

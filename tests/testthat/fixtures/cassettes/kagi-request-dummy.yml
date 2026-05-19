@@ -1,0 +1,24 @@
+http_interactions:
+- request:
+    method: POST
+    uri: https://kagi.com/api/v1/search
+    body:
+      string: '{"query":"kagiPro test","workflow":"search","limit":1,"page":1}'
+  response:
+    status: 400
+    headers:
+      x-kagi-trace: 01fb8f6de2f3bab05b6d3a735eaae190
+      content-type: application/json
+      content-encoding: gzip
+      content-length: '260'
+      via: 1.1 google
+      date: Tue, 19 May 2026 08:55:27 GMT
+      x-frame-options: SAMEORIGIN
+      strict-transport-security: max-age=31536000; includeSubDomains; preload
+      alt-svc: h3=":443"; ma=2592000
+    body:
+      string: '{"meta":{"trace":"01fb8f6de2f3bab05b6d3a735eaae190","ms":0,"node":"europe-west4"},"data":null,"errors":[{"code":"general.invalid_token","url":"https://help.kagi.com/api/errors#general.invalid_token","message":"Token
+        signature failed to verify. Ensure your token has been correctly copied from
+        your dashboard, containing no extra spaces or newlines."}]}'
+  recorded_at: 2026-05-19 08:55:27
+recorded_with: VCR-vcr/2.0.0
