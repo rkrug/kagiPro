@@ -139,6 +139,11 @@ write_extract_parquet <- function(con, fn, query_name, pn, output, verbose) {
 #'   Defaults to `TRUE`
 #' @param delete_input Determines if the `input_json` should be deleted
 #'   afterwards. Defaults to `FALSE`.
+#' @param combine Logical, default `FALSE`. If `TRUE`, all per-query/per-type
+#'   parquet partitions are combined into a single file
+#'   `<output>/combined.parquet` (rows from different result types are
+#'   union-merged by column name, with `NULL` filling absent columns), and
+#'   the Hive-partitioned dirs are removed.
 #'
 #' @return Returns `output` invisibly if parquet files were written; otherwise
 #'   `NULL`.
@@ -172,7 +177,8 @@ kagi_request_parquet <- function(
   overwrite = FALSE,
   append = FALSE,
   verbose = TRUE,
-  delete_input = FALSE
+  delete_input = FALSE,
+  combine = FALSE
 ) {
   output_check <- function(output, overwrite, append, verbose) {
     if (dir.exists(output)) {
@@ -378,6 +384,37 @@ kagi_request_parquet <- function(
       "`. Expected `kagi_query_search` or `kagi_query_extract`.",
       call. = FALSE
     )
+  }
+
+  if (isTRUE(combine)) {
+    parquet_files <- list.files(
+      output,
+      pattern = "\\.parquet$",
+      recursive = TRUE,
+      full.names = TRUE
+    )
+    parquet_files <- parquet_files[basename(parquet_files) != "combined.parquet"]
+    if (length(parquet_files) > 0L) {
+      combined_path <- file.path(output, "combined.parquet")
+      glob <- file.path(output, "**", "*.parquet")
+      stmt <- sprintf(
+        "COPY (SELECT * FROM read_parquet('%s', union_by_name=true, hive_partitioning=true)) TO '%s' (FORMAT PARQUET, COMPRESSION SNAPPY)",
+        glob,
+        combined_path
+      )
+      DBI::dbExecute(conn = con, statement = stmt)
+
+      # Drop the Hive-partitioned directories now that combined.parquet has them.
+      part_dirs <- list.dirs(output, recursive = FALSE, full.names = TRUE)
+      part_dirs <- part_dirs[grepl("^query=", basename(part_dirs))]
+      for (d in part_dirs) unlink(d, recursive = TRUE, force = TRUE)
+
+      if (verbose) {
+        message("Combined ", length(parquet_files), " parquet files into `", combined_path, "`.")
+      }
+    } else if (verbose) {
+      message("`combine = TRUE` requested but no parquet files were written.")
+    }
   }
 
   if (delete_input) {

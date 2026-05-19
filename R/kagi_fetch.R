@@ -28,6 +28,11 @@
 #'   `"corpus"`), `types` (default `"search"`), `abstract_from` (default
 #'   `"snippet"`), and `overwrite` (default same as the top-level `overwrite`).
 #'   Only honoured for `kagi_query_search` queries; ignored otherwise.
+#' @param combine Logical, default `TRUE`. Forwarded to
+#'   [kagi_request_parquet()]: collapse the per-query/per-type partitions
+#'   into a single `<endpoint>/parquet/combined.parquet` file (rows merged by
+#'   column name, NULL-filled for absent columns), and remove the Hive
+#'   partition dirs. Set to `FALSE` to keep the partitioned layout.
 #'
 #' @return For a single endpoint, normalized parquet path. For mixed endpoint
 #'   query lists, a named list of normalized parquet paths by endpoint.
@@ -57,7 +62,8 @@ kagi_fetch <- function(
   pages = 1,
   verbose = FALSE,
   error_mode = c("stop", "write_dummy"),
-  corpus = NULL
+  corpus = NULL,
+  combine = TRUE
 ) {
   error_mode <- match.arg(error_mode)
 
@@ -163,7 +169,8 @@ kagi_fetch <- function(
       overwrite = overwrite,
       append = !overwrite,
       verbose = verbose,
-      delete_input = FALSE
+      delete_input = FALSE,
+      combine = combine
     )
 
     out
