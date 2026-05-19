@@ -1,34 +1,11 @@
 # Cassette-backed end-to-end tests for kagi_fetch().
-
-skip_unless_recordable <- function(cassette_name) {
-  if (file.exists(cassette_path(cassette_name))) {
-    return(invisible(NULL))
-  }
-  if (!requireNamespace("vcr", quietly = TRUE)) {
-    testthat::skip("vcr not available; cannot record cassette.")
-  }
-  key <- get_kagi_api_key()
-  if (!nzchar(key)) {
-    testthat::skip(paste0(
-      "Missing Kagi API key for recording cassette `", cassette_name, "`."
-    ))
-  }
-  invisible(NULL)
-}
-
-make_conn <- function(cassette_name) {
-  key <- if (file.exists(cassette_path(cassette_name))) {
-    "dummy-kagi-key"
-  } else {
-    get_kagi_api_key()
-  }
-  kagiPro::kagi_connection(api_key = key, max_tries = 1L)
-}
+# See helper_kagi.R for the cassette policy (KAGIPRO_RECORD_CASSETTES,
+# VCR_RECORD_MODE).
 
 testthat::test_that("kagi_fetch search produces combined parquet", {
   cn <- "kagi-fetch-search-combined"
-  skip_unless_recordable(cn)
-  conn <- make_conn(cn)
+  skip_if_cannot_serve_cassette(cn)
+  conn <- make_kagi_test_conn(cn)
   q <- kagiPro::kagi_query_search("kagiPro test", limit = 5)
   project <- tempfile("kagi-fetch-")
   on.exit(unlink(project, recursive = TRUE, force = TRUE), add = TRUE)
@@ -54,8 +31,8 @@ testthat::test_that("kagi_fetch search produces combined parquet", {
 
 testthat::test_that("kagi_fetch search keeps Hive partitions with combine = FALSE", {
   cn <- "kagi-fetch-search-partitioned"
-  skip_unless_recordable(cn)
-  conn <- make_conn(cn)
+  skip_if_cannot_serve_cassette(cn)
+  conn <- make_kagi_test_conn(cn)
   q <- kagiPro::kagi_query_search("kagiPro test", limit = 5)
   project <- tempfile("kagi-fetch-part-")
   on.exit(unlink(project, recursive = TRUE, force = TRUE), add = TRUE)
@@ -79,8 +56,8 @@ testthat::test_that("kagi_fetch search keeps Hive partitions with combine = FALS
 
 testthat::test_that("kagi_fetch extract roundtrips to parquet", {
   cn <- "kagi-fetch-extract"
-  skip_unless_recordable(cn)
-  conn <- make_conn(cn)
+  skip_if_cannot_serve_cassette(cn)
+  conn <- make_kagi_test_conn(cn)
   q <- kagiPro::kagi_query_extract("https://example.com")
   project <- tempfile("kagi-fetch-extract-")
   on.exit(unlink(project, recursive = TRUE, force = TRUE), add = TRUE)

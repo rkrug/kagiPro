@@ -12,7 +12,7 @@ if (requireNamespace("vcr", quietly = TRUE)) {
 
   vcr::vcr_configure(
     dir = testthat::test_path("fixtures/cassettes"),
-    record = Sys.getenv("VCR_RECORD_MODE", unset = "once"),
+    record = cassette_record_mode(),
     filter_sensitive_data = list(
       "<<KAGI_API_KEY>>" = .kagi_real_key
     ),
