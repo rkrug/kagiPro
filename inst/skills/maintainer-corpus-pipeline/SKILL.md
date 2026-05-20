@@ -15,7 +15,6 @@ Apply when changing any of:
 - `content_markdown()`
 - `markdown_abstract()`
 - `summarize_with_openai()`
-- `summarize_with_kagi()`
 - `read_corpus(abstracts = TRUE)` linking behavior
 
 ## Required Contracts

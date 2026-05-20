@@ -51,13 +51,10 @@ This contract should remain stable across releases.
 
 ## Endpoint Coverage and Query Constructors
 
-Current endpoint constructors:
+Current endpoint constructors (Kagi v1 API):
 
-- `query_search()`
-- `query_enrich_web()`
-- `query_enrich_news()`
-- `query_summarize()`
-- `query_fastgpt()`
+- `kagi_query_search()` — search with workflows
+- `kagi_query_extract()` — URL → markdown
 - `kagi_fetch()` (high-level orchestrator)
 
 All constructors should:
@@ -133,7 +130,8 @@ Agent-oriented operational guidance is packaged in `inst/skills`.
 - `r-package-developer` provides a generic, reusable R-package governance
   baseline (workflow, branch policy, validation, commit standard, and skill
   design rules).
-- Endpoint user skills (`user-search`, `user-enrich`, `user-summarize`, `user-fastgpt`) mirror the endpoint vignettes.
+- `user-search` mirrors the Search/Extract workflows aligned with
+  `vignettes/quickstart.qmd` and `vignettes/v1-api-and-corpus.qmd`.
 - `user-corpus-workflow` mirrors the end-to-end corpus vignette
   (`vignettes/corpus-workflow.qmd`).
 
@@ -144,8 +142,7 @@ Skills are intended to be strict execution guidance for coding agents and must r
 Preferred skill by workflow phase:
 
 1. Endpoint query construction and request execution:
-   use `user-search`, `user-enrich`, `user-summarize`, or `user-fastgpt`
-   depending on endpoint.
+   use `user-search` (covers both `kagi_query_search()` and `kagi_query_extract()`).
 2. End-to-end corpus build (`parquet` -> `content` -> `markdown` -> `abstract`):
    use `user-corpus-workflow`.
 3. Internal pipeline changes (download/extraction/summarization/linking):
@@ -174,41 +171,25 @@ Contract:
 - compact Skills menu (one entry per skill),
 - no duplicated copied skill/reference text in vignettes.
 
-## Recent Change Summary (toward 0.4.1)
+## Recent Change Summary (0.5.0)
 
-Key project-level changes reflected in this cycle:
+- Retired the Kagi v0 API entirely. v1 is the only supported API.
+- Removed v0 query constructors (`query_search`, `query_enrich_web`,
+  `query_enrich_news`, `query_summarize`, `query_fastgpt`) and the v0-only
+  `summarize_with_kagi()` helper.
+- Renamed v1 constructors so the `_v1` suffix is no longer needed:
+  `query_search_v1()` → `kagi_query_search()`,
+  `query_extract()` → `kagi_query_extract()`. S3 class names match.
+- `kagi_connection()` keeps the `api_version` argument for forward
+  compatibility but accepts only `"v1"`; auth is always `Bearer`.
+- `kagi_fetch()` writes search output to `<project>/search/` (was
+  `<project>/search_v1/`). Existing folders need a rename.
+- `kagi_request()` adds a `pages` argument (1–10) so callers can request
+  multiple body-paginated pages per query.
 
-- Standardized query constructor behavior to named lists.
-- Renamed endpoint constructors to `query_<endpoint>`:
-  - `query_search()`
-  - `query_enrich_web()`
-  - `query_enrich_news()`
-  - `query_summarize()`
-  - `query_fastgpt()`
-- Added/expanded FastGPT endpoint support via `query_fastgpt()`.
-- Added graceful fallback behavior in `kagi_request()` with dummy outputs.
-- Added query replay metadata files (`_query_meta.json`) written by
-  `kagi_request()` as the single source of truth.
-- Ensured dummy outputs can flow through parquet conversion.
-- Added `kagi_update_query()` for query-name scoped reruns and parquet
-  partition refresh.
-- Added `clean_request()` to remove JSON request artifacts while preserving
-  per-query metadata for later reruns.
-- Strengthened tests around mixed success/failure request lists.
-- Consolidated cassette location and vcr helper setup.
-- Updated quickstart and added endpoint-focused vignettes.
-- Aligned pkgdown output and article organization.
-- Replaced legacy abstract augmentation with a modular corpus pipeline:
-  `download_content()` -> `content_markdown()` -> `markdown_abstract()`.
-- Added pluggable content summarizers:
-  `summarize_with_openai()` and `summarize_with_kagi()`.
-- Added `read_corpus()` with optional abstract linking (`abstracts = TRUE`) on
-  `id + query`.
-- Added AI-agent skills under `inst/skills` for maintainer and endpoint-specific workflows.
-- Externalized `r-package-developer` from `inst/skills` to
-  `skills/r-package-developer` as a repository-level generic skill.
-- Added standard disclaimer and AI-assisted development notice to README.
-- Removed unused legacy assets from `inst/` (old extdata, plantuml diagrams, query_test script).
+## Earlier change history
+
+See [NEWS.md](NEWS.md) for the per-version changelog.
 
 ## Agent Guidance for Future Changes
 

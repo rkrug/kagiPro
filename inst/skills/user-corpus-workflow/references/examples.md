@@ -4,8 +4,8 @@
 conn <- kagi_connection(api_key = function() keyring::key_get("API_kagi"))
 
 queries <- list(
-  bio_reports = query_search("biodiversity annual report", expand = FALSE)[[1]],
-  ecosystem_methods = query_search("ecosystem services valuation methods", expand = FALSE)[[1]]
+  bio_reports = kagi_query_search("biodiversity annual report", expand = FALSE)[[1]],
+  ecosystem_methods = kagi_query_search("ecosystem services valuation methods", expand = FALSE)[[1]]
 )
 
 kagi_fetch(

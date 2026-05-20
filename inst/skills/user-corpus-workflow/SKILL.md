@@ -10,7 +10,7 @@ Use this skill for corpus-building tasks aligned with `vignettes/corpus-workflow
 ## Required Workflow Order
 
 1. Create `kagi_connection()`.
-2. Build one or more endpoint queries (typically `query_search()`).
+2. Build one or more endpoint queries (typically `kagi_query_search()`).
 3. Run `kagi_fetch()` (or `kagi_request()` + `kagi_request_parquet()`).
 4. Run `download_content()`.
 5. Run `content_markdown()`.
@@ -21,7 +21,7 @@ Use this skill for corpus-building tasks aligned with `vignettes/corpus-workflow
 ## Allowed Function Set
 
 - `kagi_connection()`
-- `query_search()`
+- `kagi_query_search()`
 - `kagi_fetch()`
 - `kagi_request()`
 - `kagi_request_parquet()`
@@ -29,7 +29,6 @@ Use this skill for corpus-building tasks aligned with `vignettes/corpus-workflow
 - `content_markdown()`
 - `markdown_abstract()`
 - `summarize_with_openai()`
-- `summarize_with_kagi()`
 - `read_corpus()`
 
 ## Selector Rules

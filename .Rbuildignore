@@ -20,3 +20,5 @@
 ^llms-full\.txt$
 ^scripts$
 ^skills$
+^CLAUDE\.md$
+^output$

@@ -16,12 +16,6 @@ navbar:
           href: articles/skills-maintainer-corpus-pipeline.html
         - text: User Search
           href: articles/skills-user-search.html
-        - text: User Enrich
-          href: articles/skills-user-enrich.html
-        - text: User Summarize
-          href: articles/skills-user-summarize.html
-        - text: User FastGPT
-          href: articles/skills-user-fastgpt.html
         - text: User Corpus Workflow
           href: articles/skills-user-corpus-workflow.html
     - text: AI Index
@@ -32,13 +26,10 @@ articles:
   - title: Guides
     contents:
       - quickstart
-      - agent-quick-index
-      - api-contracts
+      - v1-api-and-corpus
       - corpus-workflow
-      - search-endpoint
-      - enrich-endpoint
-      - summarize-endpoint
-      - fastgpt-endpoint
+      - api-contracts
+      - agent-quick-index
   - title: Skills
     contents:
       - skills-index
@@ -46,7 +37,4 @@ articles:
       - skills-maintainer-release-sync
       - skills-maintainer-corpus-pipeline
       - skills-user-search
-      - skills-user-enrich
-      - skills-user-summarize
-      - skills-user-fastgpt
       - skills-user-corpus-workflow

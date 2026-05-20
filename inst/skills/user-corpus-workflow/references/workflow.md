@@ -17,6 +17,5 @@
 
 ## Provider Guidance
 
-- Prefer `summarize_with_openai()` for general text quality.
-- Use `summarize_with_kagi()` when staying inside Kagi API stack.
+- Use `summarize_with_openai()` for text summarization.
 - Use conservative concurrency for OpenAI due to rate limits.

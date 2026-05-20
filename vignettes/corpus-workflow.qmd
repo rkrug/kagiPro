@@ -38,16 +38,16 @@ conn <- kagi_connection(
   api_key = function() keyring::key_get("API_kagi")
 )
 
-q <- c(
-  biodiversity_search = query_search(
+q <- list(
+  biodiversity_search = kagi_query_search(
     query = "biodiversity annual report",
-    filetype = c("pdf", "docx"),
-    expand = FALSE
+    workflow = "search",
+    limit = 50
   )[[1]],
-  ecosystem_methods = query_search(
+  ecosystem_methods = kagi_query_search(
     query = "ecosystem services valuation methods",
-    filetype = c("pdf", "docx"),
-    expand = FALSE
+    workflow = "search",
+    limit = 50
   )[[1]]
 )
 ```
@@ -130,20 +130,6 @@ markdown_abstract(
   summarizer_fn = summarize_with_openai,
   model = "gpt-4.1-mini",
   workers = 1          # sequential is recommended for OpenAI rate limits
-)
-```
-
-Or use Kagi summarization over extracted text:
-
-```r
-markdown_abstract(
-  project_folder = project_folder,
-  endpoint = "search",
-  query_name = NULL,
-  summarizer_fn = summarize_with_kagi,
-  model = "cecil",
-  connection = conn,
-  workers = 4
 )
 ```
 

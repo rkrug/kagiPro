@@ -1,0 +1,129 @@
+---
+title: "Kagi API and openalexVectorise corpus handoff"
+author: "Rainer Krug"
+format: html
+vignette: >
+  %\VignetteIndexEntry{Kagi API and openalexVectorise corpus handoff}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+execute:
+  echo: true
+  warning: false
+  message: false
+  eval: false
+---
+
+# The Kagi API surface
+
+The current `kagiPro` surface targets the Kagi API described by the bundled
+OpenAPI spec at
+`system.file("api_specs/openapi.yaml", package = "kagiPro")`. Two endpoints:
+
+- `POST /search` — search with workflows (search, images, videos, news,
+  podcasts) and rich filters / lens / extract options.
+- `POST /extract` — turn 1–10 URLs into markdown.
+
+Authentication uses `Authorization: Bearer <key>` against
+`https://kagi.com/api/v1`.
+
+```r
+library(kagiPro)
+
+conn <- kagi_connection(
+  api_key = function() keyring::key_get("API_kagi")
+)
+```
+
+## Search
+
+The `/search` endpoint accepts a typed JSON body; `kagi_query_search()`
+builds it:
+
+```r
+q <- kagi_query_search(
+  "biodiversity loss",
+  workflow = "search",
+  limit    = 50,
+  filters  = list(region = "DE")
+)
+
+kagi_fetch(
+  connection     = conn,
+  query          = q,
+  project_folder = "kagi_demo"
+)
+```
+
+This writes:
+
+```
+kagi_demo/
+└── search/
+    ├── json/                       # raw API responses (audit trail)
+    │   └── query_1/
+    │       ├── _query_meta.json
+    │       └── search_1.json
+    └── parquet/                    # analysis-ready Hive-partitioned parquet
+        ├── query=query_1/type=search/...
+        ├── query=query_1/type=image/...
+        └── ...
+```
+
+The `/search` response carries many typed arrays (`search`, `image`,
+`video`, `news`, `infobox`, `direct_answer`, `related_search`, ...); each
+non-empty type lands in its own `type=...` partition.
+
+## Extract
+
+`/extract` turns one or more URLs into markdown. The API takes 1–10 URLs per
+request; `kagi_query_extract()` auto-chunks longer vectors:
+
+```r
+q_ext <- kagi_query_extract(c(
+  "https://example.com/article-1",
+  "https://example.com/article-2"
+))
+
+kagi_fetch(conn, q_ext, project_folder = "kagi_demo")
+```
+
+The parquet output has one row per extracted URL with the `url` and `markdown`
+columns.
+
+## Corpus handoff to openalexVectorise
+
+The `openalexVectorise` package expects a corpus with `id`, `title`, `abstract`
+columns at `<project_dir>/corpus/`. The `as_corpus_parquet()` adapter maps a
+search parquet dataset onto that shape (using the `snippet` field as
+`abstract` by default):
+
+```r
+parquet_path <- kagi_fetch(conn, q, project_folder = "kagi_demo")
+
+as_corpus_parquet(
+  input       = parquet_path,
+  project_dir = "/tmp/oavec_demo"
+)
+# → /tmp/oavec_demo/corpus/ is ready for openalexVectorise::embed_corpus()
+```
+
+For a one-step workflow, pass `corpus = list(project_dir = ...)` directly to
+`kagi_fetch()`:
+
+```r
+kagi_fetch(
+  connection     = conn,
+  query          = q,
+  project_folder = "kagi_demo",
+  corpus         = list(project_dir = "/tmp/oavec_demo")
+)
+```
+
+Then:
+
+```r
+openalexVectorise::embed_corpus(
+  project_dir = "/tmp/oavec_demo",
+  backend     = <chosen-backend>
+)
+```

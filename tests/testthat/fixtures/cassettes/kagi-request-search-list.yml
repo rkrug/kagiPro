@@ -1,0 +1,93 @@
+http_interactions:
+- request:
+    method: POST
+    uri: https://kagi.com/api/v1/search
+    body:
+      string: '{"query":"alpha","workflow":"search","limit":5,"page":1}'
+  response:
+    status: 200
+    headers:
+      x-kagi-trace: 84a884f2c08d9fb1e6f0afffb192a7e0
+      content-type: application/json
+      content-encoding: gzip
+      content-length: '1267'
+      via: 1.1 google
+      date: Tue, 19 May 2026 08:55:26 GMT
+      x-frame-options: SAMEORIGIN
+      strict-transport-security: max-age=31536000; includeSubDomains; preload
+      alt-svc: h3=":443"; ma=2592000
+    body:
+      string: '{"meta":{"trace":"84a884f2c08d9fb1e6f0afffb192a7e0","ms":821,"node":"europe-west4"},"data":{"search":[{"url":"https://alphausa.org/","title":"Alpha
+        USA: Alpha Course | Explore Life, Faith &amp; Meaning","snippet":"The Alpha
+        course is a safe space to explore the Christian faith and ask big questions.
+        Find an Alpha program near you and start the conversation.","props":{"language":"en","language_probability":0.8350414633750916,"group_id":"alphausa.org"}},{"url":"https://alphausa.org/try/","title":"Find
+        an Alpha Course Near You | Try Alpha","snippet":"If you want a judgment-free
+        space to explore difficult questions about life, faith, and meaning, and to
+        share your views, Alpha is the place for you.","props":{"language":"en","language_probability":0.923733651638031,"group_id":"alphausa.org"}},{"url":"https://en.wikipedia.org/wiki/Alpha","title":"Alpha
+        - Wikipedia","snippet":"Alpha is the first letter of the Greek alphabet and
+        has a value of one in Greek numerals. It also has various meanings and uses
+        in mathematics, science, logic, and linguistics. ... The first letter of the
+        Greek alphabet. In the system of Greek numerals, it has a value of one. Alpha
+        is derived from the Phoenician letter aleph.","props":{"language":"en","language_probability":0.917300283908844,"group_id":"en.wikipedia.org"}},{"url":"https://www.imdb.com/title/tt32275943/","title":"Alpha
+        (2025) - IMDb","snippet":"Alpha, a troubled 13-year-old lives with her single
+        mom. Their.","props":{"group_id":"imdb.com"}},{"url":"https://www.imdb.com/title/tt28363783/","title":"Alpha
+        (2026) - IMDb","snippet":"Alpha: Directed by Shiv Rawail. With Alia Bhatt,
+        Sharvari, Bobby Deol, Anil Kapoor. A relentless action thriller marking India&#39;s
+        first female-led action spectacle. Two girls are forced to join forces and
+        pushed to their limits as they confront a ruthless nemesis, leading to a brutal
+        showdown.","props":{"language":"en","group_id":"imdb.com"}}],"adjacent_question":[{"url":"https://en.wikipedia.org/wiki/Alpha","title":"Alpha
+        - Wikipedia","snippet":"As the first letter of the alphabet, Alpha as a Greek
+        numeral came to represent the number 1. Therefore, Alpha, both as a symbol
+        and term, is used to refer to the \"first\", or \"primary\", or \"principal\"
+        (most significant) occurrence or status of a thing.","props":{"question":"What
+        does alpha (α) symbolize?","language":"en","language_probability":0.9394106268882751}}],"video":[{"url":"https://www.youtube.com/watch?v=4Cc2A-YLARs","title":"ALPHA
+        - Official Trailer - In Theaters March 27 - YouTube","snippet":"Alpha, a troubled
+        13-year-old lives with her single mom. Their world collapses the day she returns
+        from school with a tattoo on her arm.","time":"2025-12-12T00:00:00Z","props":{"language":"en","language_probability":0.9289649724960327,"group_id":"youtube.com"}}]}}'
+  recorded_at: 2026-05-19 08:55:26
+- request:
+    method: POST
+    uri: https://kagi.com/api/v1/search
+    body:
+      string: '{"query":"beta","workflow":"search","limit":5,"page":1}'
+  response:
+    status: 200
+    headers:
+      x-kagi-trace: 4b5b47a3dc77cc6ef599f23eabdc3222
+      content-type: application/json
+      content-encoding: gzip
+      content-length: '1392'
+      via: 1.1 google
+      date: Tue, 19 May 2026 08:55:27 GMT
+      x-frame-options: SAMEORIGIN
+      strict-transport-security: max-age=31536000; includeSubDomains; preload
+      alt-svc: h3=":443"; ma=2592000
+    body:
+      string: '{"meta":{"trace":"4b5b47a3dc77cc6ef599f23eabdc3222","ms":680,"node":"europe-west4"},"data":{"search":[{"url":"https://betausa.com/","title":"Beta
+        USA Beta Motocross, Dual Sport, and Trials","snippet":"Beta USA Offers Motocross,
+        Enduro, 450 RX, 350 RS, 390 RS, 430 RS, 500 RS, 300 RR, 300 Xtrainer , Beta
+        usa, Beta America. ... Beta USA Offers Motocross, Enduro, 450 RX, 350 RS,
+        390 RS, 430 RS, 500 RS, 300 RR, 300 Xtrainer , Beta usa, Beta America","props":{"language":"en","group_id":"betausa.com"}},{"url":"https://en.wikipedia.org/wiki/Beta","title":"Beta
+        - Wikipedia","snippet":"Beta (UK: / ˈbiːtə /, US: / ˈbeɪtə / ⓘ; uppercase
+        Β, lowercase β, or cursive ϐ; Ancient Greek: βῆτα, romanized: bē̂ta or Greek:
+        βήτα, romanized: víta) is the second letter of the Greek alphabet. In the
+        system of Greek numerals, it has a value of 2. In Ancient Greek, beta represented
+        the voiced bilabial plosive IPA: [b]. In Modern Greek, it represents the voiced
+        ...","props":{"language":"en","group_id":"en.wikipedia.org"}},{"url":"https://en.wikipedia.org/wiki/Beta_(motorcycle_manufacturer)","title":"Beta
+        (motorcycle manufacturer) - Wikipedia","snippet":"Beta is an Italian motorcycle
+        manufacturer, specialising in off-road motorcycles. Beta is best known for
+        their popular trials bikes.","props":{"language":"en","language_probability":0.965431272983551,"group_id":"en.wikipedia.org"}},{"url":"https://www.betamotor.com/en/","title":"Betamotor
+        S.p.A.","snippet":"Beta was founded in Florence in 1905 by the Bianchi family,
+        evolving from a small workshop to a leading name in the world of off-road
+        motorcycles.","props":{"language":"en","language_probability":0.9504989385604858,"group_id":"betamotor.com"}},{"url":"https://www.betamotor.com/en/racing/","title":"Racing
+        – Betamotor S.p.A.","snippet":"A story of passion and talent, written by the
+        riders and teams who bring Beta colours to the most important podiums. Discover
+        the stars of the Factory Team and follow their successes.","image":{"url":"https://p.kagi.com/proxy/th?c=fl5H5doFdZVT3TYbM87OdIB6fwnu1m4raP4qD413QT93ADXaNmHswBmtirUMKTKhn0T6VGZQ7pA4SG2JhxasXCv-Fxzt3p8zJW8YerVI7DPOxKI9IrINndnWUXAJ5L_L"},"props":{"language":"en","group_id":"betamotor.com"}}],"adjacent_question":[{"url":"https://corporatefinanceinstitute.com/resources/valuation/what-is-beta-guide/","title":"What
+        is Beta in Finance? Formula &amp; Examples | CFI","snippet":"The beta (β)
+        of an investment security (i.e., a stock) is a measurement of its volatility
+        of returns relative to the entire market. It is used as a measure of risk
+        and is an integral part of the Capital Asset Pricing Model (CAPM). A company
+        with a higher beta has greater risk and also greater expected returns.","props":{"question":"What
+        is beta β?","language":"en","language_probability":0.9584160447120667}}]}}'
+  recorded_at: 2026-05-19 08:55:27
+recorded_with: VCR-vcr/2.0.0

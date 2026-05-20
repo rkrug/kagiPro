@@ -13,7 +13,6 @@ markdown_abstract(
   verbose = FALSE,
   summarizer_fn = summarize_with_openai,
   model = "gpt-4.1-mini",
-  connection = NULL,
   provider_args = list(),
   markdown_root = "markdown",
   abstract_root = "abstract"
@@ -22,8 +21,8 @@ markdown_abstract(
 \arguments{
 \item{project_folder}{Root project folder containing endpoint subfolders.}
 
-\item{endpoint}{Optional endpoint selector (for example `"search"` or
-`"enrich_news"`). If `NULL`, all supported endpoints are considered.}
+\item{endpoint}{Optional endpoint selector (currently only `"search"`).
+If `NULL`, all supported endpoints are considered.}
 
 \item{query_name}{Optional query selector. If `NULL`, all query partitions
 are considered.}
@@ -38,9 +37,6 @@ are considered.}
 `fn(text, model, ...) -> character(1) | NA_character_`.}
 
 \item{model}{Provider-specific model/engine.}
-
-\item{connection}{Optional [kagi_connection()] object. Used for
-[summarize_with_kagi()] when not supplied via `provider_args`.}
 
 \item{provider_args}{Optional named list forwarded to `summarizer_fn`.}
 

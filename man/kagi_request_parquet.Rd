@@ -11,7 +11,8 @@ kagi_request_parquet(
   overwrite = FALSE,
   append = FALSE,
   verbose = TRUE,
-  delete_input = FALSE
+  delete_input = FALSE,
+  combine = FALSE
 )
 }
 \arguments{
@@ -33,6 +34,12 @@ Defaults to \code{TRUE}}
 
 \item{delete_input}{Determines if the \code{input_json} should be deleted
 afterwards. Defaults to \code{FALSE}.}
+
+\item{combine}{Logical, default \code{FALSE}. If \code{TRUE}, all per-query/per-type
+parquet partitions are combined into a single file
+\verb{<output>/combined.parquet} (rows from different result types are
+union-merged by column name, with \code{NULL} filling absent columns), and
+the Hive-partitioned dirs are removed.}
 }
 \value{
 Returns \code{output} invisibly if parquet files were written; otherwise
@@ -51,10 +58,13 @@ dataset. Files with \code{data = null} are skipped.
 
 Output parquet rows include an \code{id} column for traceability:
 \itemize{
-\item Search: \verb{SEARCH_<hash>} from normalized \code{url} when available.
-\item Enrich web: \verb{ENRICH_WEB_<hash>} from normalized \code{url} when available.
-\item Enrich news: \verb{ENRICH_NEWS_<hash>} from normalized \code{url} when available.
-\item Summarize: \verb{SUMMARIZE_<hash>} from request metadata.
-\item FastGPT: \verb{FASTGPT_<hash>} from request metadata.
+\item Search: \verb{SEARCH_<hash>} from normalized \code{url}; one parquet partition
+per non-empty result type (\code{type=search}, \code{type=image}, ...).
+\item Extract: \verb{EXTRACT_<hash>} from normalized \code{url}; one row per
+extracted page.
 }
+
+Dispatch is metadata-driven: the sibling \verb{_query_meta.json} (written by
+\code{\link[=kagi_request]{kagi_request()}}) records the \code{query_class} and selects the correct
+writer.
 }

@@ -1,12 +1,12 @@
 # Search Workflow (Aligned to Vignette)
 
-Source of truth: `vignettes/search-endpoint.qmd`.
+Source of truth: `vignettes/quickstart.qmd`.
 
 ## Sequence
 
 1. Build connection:
    `conn <- kagi_connection(api_key = function() keyring::key_get("API_kagi"))`
-2. Build search query with `query_search()`.
+2. Build search query with `kagi_query_search()`.
 3. Preferred: execute end-to-end with `kagi_fetch(connection = conn, query = ..., project_folder = ...)`.
 4. Low-level path: `kagi_request(connection = conn, query = ..., output = ..., overwrite = TRUE)`.
 5. For batches, pass a list query and optional `workers`.

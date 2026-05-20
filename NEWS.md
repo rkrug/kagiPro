@@ -1,3 +1,38 @@
+# kagiPro 0.5.0
+
+## Breaking Changes
+
+- **Removed v0 API surface.** The Kagi v0 beta API is retired; v1 is now
+  the only supported API. The following query constructors have been
+  removed: `query_search()` (v0), `query_enrich_web()`, `query_enrich_news()`,
+  `query_summarize()`, `query_fastgpt()`, and the helper
+  `summarize_with_kagi()`.
+- **Renamed v1 constructors** to drop the `_v1` suffix now that there is no
+  v0 to disambiguate from:
+  - `query_search_v1()` → `kagi_query_search()`
+    (class `kagi_query_search_v1` → `kagi_query_search`).
+  - `query_extract()` → `kagi_query_extract()`
+    (class unchanged).
+- **`kagi_connection()`** no longer defaults to or accepts `api_version = "v0"`;
+  only `"v1"` is accepted. Auth uses `Bearer` exclusively.
+- **`kagi_fetch()` on-disk layout**: the search endpoint folder is now
+  `<project>/search/...` (previously `<project>/search_v1/...`). Existing
+  v1-style project folders need a rename or rerun.
+- **`kagi_request()`** gains a `pages` argument (1–10) controlling how many
+  body-paginated requests are issued per query object. Replay metadata
+  files written under the old `kagi_query_search_v1` class name are not
+  reusable — rerun the constructor.
+
+## Documentation
+
+- Deleted v0 endpoint vignettes (`search-endpoint`, `enrich-endpoint`,
+  `summarize-endpoint`, `fastgpt-endpoint`) and the corresponding skill
+  packs (`user-enrich`, `user-summarize`, `user-fastgpt`).
+- Rewrote `quickstart`, `corpus-workflow`, and `v1-api-and-corpus` for the
+  v1-only surface.
+- Updated `inst/skills/user-search` and `user-corpus-workflow` for the
+  renamed constructors.
+
 # kagiPro 0.4.1
 
 ## Documentation

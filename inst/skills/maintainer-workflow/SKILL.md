@@ -35,7 +35,7 @@ For endpoint-only user workflows, use `user-search`, `user-enrich`, `user-summar
 
 Enforce these naming rules:
 
-- Query constructors use `query_<endpoint>` names (for example `query_search`, `query_fastgpt`).
+- Query constructors are `kagi_query_<endpoint>` (currently `kagi_query_search`, `kagi_query_extract`); class names match.
 - Request executors are generic (`kagi_request`, `kagi_request_parquet`).
 - Constructor output contract remains consistent across endpoints.
 - Output folders should be explicit and stable in examples/tests.

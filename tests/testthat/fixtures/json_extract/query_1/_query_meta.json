@@ -1,0 +1,15 @@
+{
+  "query_name": "query_1",
+  "endpoint": "extract",
+  "query_class": "kagi_query_extract",
+  "query_payload": {
+    "pages": [
+      { "url": "https://example.com/a" },
+      { "url": "https://example.com/b" }
+    ]
+  },
+  "request_args": {},
+  "schema_version": "1.0.0",
+  "kagiPro_version": "0.5.0",
+  "updated_at": "2026-05-19T10:00:00Z"
+}

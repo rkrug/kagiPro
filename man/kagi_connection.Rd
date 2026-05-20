@@ -5,14 +5,16 @@
 \title{Construct a Kagi API connection}
 \usage{
 kagi_connection(
-  base_url = "https://kagi.com/api/v0",
+  base_url = NULL,
   api_key = Sys.getenv("KAGI_API_KEY"),
-  max_tries = 3
+  max_tries = 3,
+  api_version = "v1"
 )
 }
 \arguments{
-\item{base_url}{Character scalar. Base URL for the Kagi API.
-Defaults to \code{"https://kagi.com/api/v0"}.}
+\item{base_url}{Character scalar. Base URL for the Kagi API. If \code{NULL}
+(default), the canonical base URL for \code{api_version} is used
+(e.g. \verb{https://kagi.com/api/v1}).}
 
 \item{api_key}{API key used for authentication. By default this is read
 from the environment variable \code{KAGI_API_KEY}. Best practice is to set
@@ -22,6 +24,9 @@ a function that resolves the key lazily at request time
 
 \item{max_tries}{Integer scalar. Maximum number of retry attempts
 for transient errors. Defaults to \code{3}.}
+
+\item{api_version}{Character scalar. Currently only \code{"v1"} is supported.
+Retained as an argument for forward compatibility.}
 }
 \value{
 An object of class \strong{\code{kagi_connection}} with components:
@@ -29,12 +34,17 @@ An object of class \strong{\code{kagi_connection}} with components:
 \item{\code{base_url}}{Base API URL.}
 \item{\code{api_key}}{API key (or a function to resolve it).}
 \item{\code{max_tries}}{Maximum retry attempts.}
+\item{\code{api_version}}{\code{"v1"}.}
 }
 }
 \description{
 Build a typed S3 object of class \strong{\code{kagi_connection}} which holds the
 basic configuration required to talk to the Kagi API. This includes
 the API base URL, authentication key, and retry settings.
+}
+\details{
+The connection targets the Kagi API (\code{v1}, the only supported version).
+Authentication uses the standard HTTP \code{Bearer} scheme.
 }
 \examples{
 \dontrun{

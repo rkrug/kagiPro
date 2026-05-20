@@ -11,12 +11,11 @@
 
 ## Overview
 
-`kagiPro` provides a lightweight R interface to the **Kagi API**, including:
+`kagiPro` provides a lightweight R interface to the **Kagi API** (v1):
 
-- **Search API** — perform web searches with advanced operators
-- **Enrich API** — get higher-signal results from specialized indices
-- **Universal Summarizer** — summarize text or URLs in one call
-- **FastGPT API** — ask grounded LLM questions with optional web context
+- **Search** — typed JSON queries with workflows (search, images, videos,
+  news, podcasts), filters, lens, and inline extract.
+- **Extract** — turn HTTPS URLs into markdown for downstream pipelines.
 
 The package follows the [rOpenSci](https://ropensci.org) style for API clients:
 
@@ -63,24 +62,19 @@ conn <- kagi_connection(
 library(kagiPro)
 
 # Build a query
-q <- query_search(
-  query    = 'biodiversity "annual report"',
-  filetype = "pdf",
-  site     = "example.com",
-  expand   = FALSE
+q <- kagi_query_search(
+  query    = "biodiversity annual report",
+  workflow = "search",
+  limit    = 50
 )
 
-# Execute request and write JSON output
+# Execute request and write JSON + parquet into a project folder
 conn <- kagi_connection(api_key = function() keyring::key_get("API_kagi"))
-out <- tempfile("kagiPro-search-")
-dir.create(out, recursive = TRUE, showWarnings = FALSE)
 
-kagi_request(
+kagi_fetch(
   connection = conn,
   query = q,
-  limit = 3,
-  output = out,
-  overwrite = TRUE
+  project_folder = "kagi_project"
 )
 ```
 
@@ -91,11 +85,8 @@ kagi_request(
 A detailed **Quickstart vignette** is included and available at:  
 👉 <https://rkrug.github.io/kagiPro/articles/quickstart.html>
 
-Endpoint guides are available at:
-- <https://rkrug.github.io/kagiPro/articles/search-endpoint.html>
-- <https://rkrug.github.io/kagiPro/articles/enrich-endpoint.html>
-- <https://rkrug.github.io/kagiPro/articles/summarize-endpoint.html>
-- <https://rkrug.github.io/kagiPro/articles/fastgpt-endpoint.html>
+Vignettes:
+- <https://rkrug.github.io/kagiPro/articles/v1-api-and-corpus.html>
 - <https://rkrug.github.io/kagiPro/articles/corpus-workflow.html>
 - <https://rkrug.github.io/kagiPro/articles/agent-quick-index.html>
 - <https://rkrug.github.io/kagiPro/articles/api-contracts.html>
@@ -134,7 +125,7 @@ high-level entrypoint. It writes endpoint-scoped folders:
 library(kagiPro)
 
 conn <- kagi_connection(api_key = function() keyring::key_get("API_kagi"))
-q <- query_search("biodiversity policy", expand = FALSE)
+q <- kagi_query_search("biodiversity policy")
 
 parquet_path <- kagi_fetch(
   connection = conn,

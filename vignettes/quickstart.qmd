@@ -18,40 +18,17 @@ This quickstart is a complete first run with `kagiPro`: install the package, cre
 
 The package is intentionally structured around a stable pattern:
 
-1. Create query objects with endpoint-specific constructors.
+1. Create query objects with endpoint-specific constructors
+   (`kagi_query_search()` and `kagi_query_extract()`).
 2. Reuse a single `kagi_connection()` object.
 3. Either use `kagi_fetch()` for project-folder workflows, or use
    `kagi_request()` + `kagi_request_parquet()` directly.
 4. Keep JSON as the request audit trail, and parquet as analysis-ready output.
 
-Once this pattern is familiar, every endpoint follows the same operational logic.
-
-## Project-folder first workflow
-
-For endpoint-scoped project outputs (aligned with `openalexPro` conventions),
-use `kagi_fetch()`:
-
-```r
-q_project <- query_search("biodiversity policy", expand = FALSE)
-
-kagi_fetch(
-  connection = conn,
-  query = q_project,
-  project_folder = "kagi_project"
-)
-```
-
-This writes to:
-
-- `kagi_project/search/json`
-- `kagi_project/search/parquet`
-
 ## Install and load the package
 
-If `kagiPro` is not installed yet, install it from GitHub and load it:
-
 ```r
-if (requireNamespace("remotes", quietly = FALSE)) {
+if (!requireNamespace("remotes", quietly = TRUE)) {
   install.packages("remotes")
 }
 remotes::install_github("rkrug/kagiPro")
@@ -74,34 +51,55 @@ conn <- kagi_connection(
 )
 ```
 
-Using a function for `api_key` keeps credentials out of scripts and supports reproducible batch runs.
+Using a function for `api_key` keeps credentials out of scripts and supports
+reproducible batch runs. The connection targets the Kagi `v1` API; auth uses
+the standard `Bearer` scheme.
 
-## Build your first search query
+## Project-folder first workflow
 
-Search is a good first endpoint because it shows how query constructors work:
+For endpoint-scoped project outputs, use `kagi_fetch()`:
 
 ```r
-q <- query_search(
-  query = 'biodiversity "annual report"',
-  filetype = c("pdf", "docx"),
-  site = c("example.com", "gov"),
-  inurl = c("2024", "report"),
-  intitle = "summary",
-  expand = FALSE
+q <- kagi_query_search("biodiversity policy")
+
+kagi_fetch(
+  connection = conn,
+  query = q,
+  project_folder = "kagi_project"
 )
 ```
 
-`query_search()` returns a named list, even for a single input. That consistency makes it easy to scale the same code from one query to many.
+This writes to:
 
-If you want to inspect the generated search string interactively:
+- `kagi_project/search/json`
+- `kagi_project/search/parquet`
+
+## Build a search query
+
+`kagi_query_search()` returns a named list of typed query objects, one per
+input term. The default body is intentionally neutral — only `query` and
+`workflow` are sent — so every shaping option is opt-in.
 
 ```r
-open_search_query(q[[1]])
+q <- kagi_query_search(
+  query = c("biodiversity", "ecosystem services"),
+  workflow = "search",
+  limit = 50,
+  filters = list(region = "DE")
+)
 ```
 
-## Execute and persist search results
+Single or batch usage is the same call shape; the returned list is consumed
+unchanged by `kagi_request()` / `kagi_fetch()`.
 
-Create an output folder and run the request:
+To inspect a query interactively in the browser:
+
+```r
+kagi_open_search_query(q[[1]])   # single
+kagi_open_search_query(q)        # all queries in the list
+```
+
+## Execute and persist search results (low-level)
 
 ```r
 out_search <- tempfile("kagiPro-search-")
@@ -110,101 +108,17 @@ dir.create(out_search, recursive = TRUE, showWarnings = FALSE)
 kagi_request(
   connection = conn,
   query = q,
-  limit = 5,
   output = out_search,
   overwrite = TRUE
 )
 
-list.files(out_search, pattern = "\\.json$", full.names = TRUE)
+list.files(out_search, recursive = TRUE)
 ```
 
-Each request writes a JSON file. This makes reruns and audits straightforward.
+Each request writes a JSON file plus a `_query_meta.json` replay record per
+query. JSON is the audit trail; parquet (below) is the analysis format.
 
-## Run one example from each endpoint
-
-The remaining endpoints use the same connection and request function. Only the query constructor changes.
-
-### Enrich web
-
-```r
-q_web <- query_enrich_web("open data portals", site = "gov", expand = FALSE)
-
-out_web <- tempfile("kagiPro-enrich-web-")
-dir.create(out_web, recursive = TRUE, showWarnings = FALSE)
-
-kagi_request(
-  connection = conn,
-  query = q_web,
-  output = out_web,
-  overwrite = TRUE
-)
-```
-
-### Enrich news
-
-```r
-q_news <- query_enrich_news("biodiversity policy", expand = FALSE)
-
-out_news <- tempfile("kagiPro-enrich-news-")
-dir.create(out_news, recursive = TRUE, showWarnings = FALSE)
-
-kagi_request(
-  connection = conn,
-  query = q_news,
-  output = out_news,
-  overwrite = TRUE
-)
-```
-
-### Summarize (text input)
-
-```r
-q_sum_text <- query_summarize(
-  text = paste(
-    "Biodiversity underpins ecosystem services including pollination,",
-    "soil fertility, water purification, and climate regulation.",
-    "Species decline has implications for resilience and wellbeing."
-  ),
-  engine = "cecil",
-  summary_type = "summary",
-  target_language = "EN",
-  cache = TRUE
-)
-
-out_sum <- tempfile("kagiPro-summarize-")
-dir.create(out_sum, recursive = TRUE, showWarnings = FALSE)
-
-kagi_request(
-  connection = conn,
-  query = q_sum_text,
-  output = out_sum,
-  overwrite = TRUE
-)
-```
-
-### FastGPT
-
-```r
-q_fast <- query_fastgpt(
-  query = "What are ecosystem services?",
-  cache = TRUE,
-  web_search = TRUE
-)
-
-out_fast <- tempfile("kagiPro-fastgpt-")
-dir.create(out_fast, recursive = TRUE, showWarnings = FALSE)
-
-kagi_request(
-  connection = conn,
-  query = q_fast,
-  output = out_fast,
-  overwrite = TRUE
-)
-```
-
-## Convert JSON results to parquet
-
-When you move from inspection to analysis pipelines, parquet is usually more convenient:
+## Convert JSON to parquet
 
 ```r
 parquet_dir <- tempfile("kagiPro-parquet-")
@@ -216,11 +130,30 @@ kagi_request_parquet(
 )
 ```
 
-## Bridge to OpenAlex-style vector input
+Each non-empty search result type lands in its own partition
+(`type=search`, `type=image`, `type=news`, ...). Rows include a deterministic
+`id` hash of the normalized URL.
 
-If you want to pass results into `openalexPro`/`openalexVectorComp` workflows,
-use the modular content pipeline: download content -> extract markdown ->
-summarize markdown.
+## Extract content for a corpus
+
+To convert URLs to markdown content (e.g. for downstream embedding), use the
+Extract endpoint:
+
+```r
+q_ex <- kagi_query_extract(c(
+  "https://example.com/article-1",
+  "https://example.com/article-2"
+))
+
+kagi_fetch(
+  connection = conn,
+  query = q_ex,
+  project_folder = "kagi_project"
+)
+# writes kagi_project/extract/json and kagi_project/extract/parquet
+```
+
+## Bridge to vector / corpus workflows
 
 ```r
 download_content(
@@ -239,22 +172,16 @@ markdown_abstract(
   summarizer_fn = summarize_with_openai,
   model = "gpt-4.1-mini"
 )
-
-# abstract parquet output is written under:
-# kagi_project/search/abstract/query=<query_name>/
 ```
 
-`id` is a deterministic hash of normalized URL.
+See the **corpus-workflow** vignette for the full pipeline.
 
 ## Where to go next
 
-For deeper endpoint-specific workflows (batching patterns, robust error handling, and endpoint-focused examples), continue with:
-
-- `vignette("search-endpoint", package = "kagiPro")`
-- `vignette("enrich-endpoint", package = "kagiPro")`
-- `vignette("summarize-endpoint", package = "kagiPro")`
-- `vignette("fastgpt-endpoint", package = "kagiPro")`
-- `vignette("corpus-workflow", package = "kagiPro")`
+- `vignette("corpus-workflow", package = "kagiPro")` — search → markdown →
+  abstract → corpus.
+- `vignette("api-contracts", package = "kagiPro")` — endpoint contracts.
+- `vignette("agent-quick-index", package = "kagiPro")` — agent-oriented index.
 
 ## Session info
 

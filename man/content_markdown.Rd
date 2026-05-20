@@ -18,8 +18,8 @@ content_markdown(
 \arguments{
 \item{project_folder}{Root project folder containing endpoint subfolders.}
 
-\item{endpoint}{Optional endpoint selector (for example `"search"` or
-`"enrich_news"`). If `NULL`, all supported endpoints are considered.}
+\item{endpoint}{Optional endpoint selector (currently only `"search"`).
+If `NULL`, all supported endpoints are considered.}
 
 \item{query_name}{Optional query selector. If `NULL`, all query partitions
 are considered.}

@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "trace": "test-extract-trace",
+    "ms": 250,
+    "node": "test-node"
+  },
+  "data": [
+    {
+      "url": "https://example.com/a",
+      "markdown": "# Example A\n\nFirst page content."
+    },
+    {
+      "url": "https://example.com/b",
+      "markdown": "# Example B\n\nSecond page content."
+    }
+  ]
+}

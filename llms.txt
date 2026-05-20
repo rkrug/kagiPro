@@ -1,6 +1,7 @@
 # kagiPro AI Index
 
-kagiPro is an R package for Kagi API workflows with project-folder outputs and a modular corpus pipeline.
+kagiPro is an R package for the Kagi v1 API with project-folder outputs and
+a modular corpus pipeline.
 
 ## Canonical docs
 - README: ./README.md
@@ -17,12 +18,13 @@ kagiPro is an R package for Kagi API workflows with project-folder outputs and a
 
 ## Core function groups
 - Connection/auth: `kagi_connection()`
-- Query constructors: `query_search()`, `query_enrich_web()`, `query_enrich_news()`, `query_summarize()`, `query_fastgpt()`
+- Query constructors: `kagi_query_search()`, `kagi_query_extract()`
 - Request execution: `kagi_request()`, `kagi_fetch()`
 - Storage/refresh: `kagi_request_parquet()`, `clean_request()`, `kagi_update_query()`
-- Content/abstract pipeline: `download_content()`, `content_markdown()`, `markdown_abstract()`, `summarize_with_openai()`, `summarize_with_kagi()`, `read_corpus()`
+- Content/abstract pipeline: `download_content()`, `content_markdown()`, `markdown_abstract()`, `summarize_with_openai()`, `read_corpus()`, `as_corpus_parquet()`
 
 ## Contract highlights
+- Only the Kagi `v1` API is supported (v0 retired in 0.5.0)
 - Long-lived branches: `main`, `dev`
 - Do not delete `dev` after PR merges
 - `abstract` column is lowercase in abstract outputs

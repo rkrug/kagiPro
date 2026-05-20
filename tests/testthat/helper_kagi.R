@@ -1,57 +1,95 @@
 # tests/testthat/helper_kagi.R
-# Helper utilities shared by tests
+# Helper utilities shared by tests.
+#
+# Cassette policy
+# ---------------
+# vcr is configured in setup-vcr.R with `record = cassette_record_mode()`.
+# The mode is resolved (in order):
+#
+#   1. `VCR_RECORD_MODE` env var, if set ("once", "none", "new_episodes",
+#      "all" — see ?vcr::vcr_configure).
+#   2. `KAGIPRO_RECORD_CASSETTES` env var:
+#         "true"  -> "all"   (force re-record on every run)
+#         "false" -> "none"  (strict replay; error if cassette missing
+#                             or request does not match)
+#   3. Default: "once" — record if the cassette is missing, replay
+#      otherwise. Local re-runs do NOT re-record.
+#
+# Practical recipes
+# -----------------
+#   * Refresh / update cassettes (requires a working API key):
+#         KAGIPRO_RECORD_CASSETTES=true Rscript -e 'devtools::test()'
+#     or, to refresh a single cassette, delete its .yml file and re-run.
+#
+#   * Force strict replay (CI default — fail if a cassette is missing or
+#     the live request would differ from the recording):
+#         KAGIPRO_RECORD_CASSETTES=false Rscript -e 'devtools::test()'
+#
+#   * Normal local development:
+#         Rscript -e 'devtools::test()'
+#     Existing cassettes are replayed (no network, no credentials needed).
+#     If a brand-new test introduces a new cassette name, it is recorded
+#     once on first run.
 
-# Resolve keyring key for first-time cassette recording.
+cassette_record_mode <- function() {
+  m <- Sys.getenv("VCR_RECORD_MODE", unset = "")
+  if (nzchar(m)) {
+    return(m)
+  }
+  flag <- tolower(Sys.getenv("KAGIPRO_RECORD_CASSETTES", unset = ""))
+  if (identical(flag, "true"))  return("all")
+  if (identical(flag, "false")) return("none")
+  "once"
+}
+
+# Resolve a real key (KAGI_API_KEY or keyring "API_kagi"). Returns "" if
+# no key is available.
 get_kagi_api_key <- function() {
-  if (!requireNamespace("keyring", quietly = TRUE)) {
-    return(Sys.getenv("KAGI_API_KEY", ""))
-  }
-
-  key <- tryCatch(
-    keyring::key_get("API_kagi"),
-    error = function(e) ""
-  )
-
-  if (nzchar(key)) {
-    return(key)
-  }
-
   key <- Sys.getenv("KAGI_API_KEY", "")
-
-  key
+  if (nzchar(key)) return(key)
+  if (!requireNamespace("keyring", quietly = TRUE)) return("")
+  tryCatch(keyring::key_get("API_kagi"), error = function(e) "")
 }
 
 cassette_path <- function(name) {
   testthat::test_path("fixtures", "cassettes", paste0(name, ".yml"))
 }
 
-# If cassette exists, replay can run with a placeholder key.
-# If cassette does not exist, fetch real key via keyring for live recording.
-api_key_for_cassette <- function(name) {
-  if (file.exists(cassette_path(name))) {
-    key <- Sys.getenv("KAGI_API_KEY", "")
-    if (!nzchar(key)) {
-      key <- "dummy-kagi-key"
-    }
-    return(key)
-  }
-
-  key <- get_kagi_api_key()
-  if (!nzchar(key)) {
-    testthat::skip(
-      paste0(
-        "Missing Kagi API key for recording cassette `",
-        name,
-        "`. Set KAGI_API_KEY or store keyring entry API_kagi."
-      )
-    )
-  }
-  key
+# Decide whether the current run will hit the network for a given cassette.
+# `"all"` always records; `"new_episodes"` records new interactions; `"once"`
+# records only if the cassette is missing; `"none"` never records.
+cassette_will_record <- function(name) {
+  mode <- cassette_record_mode()
+  if (identical(mode, "all")) return(TRUE)
+  if (identical(mode, "none")) return(FALSE)
+  if (identical(mode, "new_episodes")) return(TRUE)
+  # "once": record only when the cassette does not yet exist.
+  !file.exists(cassette_path(name))
 }
 
-# CRAN guidelines: skip on CRAN to avoid real HTTP during first cassette recording
-skip_on_cran_if_recording <- function() {
-  if (identical(Sys.getenv("NOT_CRAN"), "false")) {
-    testthat::skip("Skipping on CRAN")
+# Build a kagi_connection for cassette-backed tests. When the test will
+# record, we use the real key from env/keyring; otherwise we use a
+# placeholder so replay works without credentials. Tests that need a key
+# (recording) but have none available should call `skip_if_no_key()`.
+make_kagi_test_conn <- function(name, max_tries = 1L) {
+  key <- if (cassette_will_record(name)) get_kagi_api_key() else "dummy-kagi-key"
+  if (!nzchar(key)) key <- "dummy-kagi-key"
+  kagiPro::kagi_connection(api_key = key, max_tries = max_tries)
+}
+
+# Skip the test if recording is required but no API key is available.
+skip_if_cannot_serve_cassette <- function(name) {
+  if (!cassette_will_record(name)) {
+    return(invisible(NULL))
   }
+  if (!requireNamespace("vcr", quietly = TRUE)) {
+    testthat::skip("vcr not available; cannot record cassette.")
+  }
+  if (!nzchar(get_kagi_api_key())) {
+    testthat::skip(paste0(
+      "Cassette `", name, "` would need to be recorded but no API key is ",
+      "available (set KAGI_API_KEY or store keyring entry `API_kagi`)."
+    ))
+  }
+  invisible(NULL)
 }

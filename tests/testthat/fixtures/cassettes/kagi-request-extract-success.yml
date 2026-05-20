@@ -1,0 +1,22 @@
+http_interactions:
+- request:
+    method: POST
+    uri: https://kagi.com/api/v1/extract
+    body:
+      string: '{"pages":[{"url":"https://example.com"}]}'
+  response:
+    status: 200
+    headers:
+      x-kagi-trace: 65054629f359d0b16109b5ec0fa891fb
+      content-type: application/json
+      content-encoding: gzip
+      content-length: '105'
+      via: 1.1 google
+      date: Tue, 19 May 2026 08:55:25 GMT
+      x-frame-options: SAMEORIGIN
+      strict-transport-security: max-age=31536000; includeSubDomains; preload
+      alt-svc: h3=":443"; ma=2592000
+    body:
+      string: '{"meta":{"trace":"65054629f359d0b16109b5ec0fa891fb","ms":10001,"node":"europe-west4"},"data":[]}'
+  recorded_at: 2026-05-19 08:55:25
+recorded_with: VCR-vcr/2.0.0
